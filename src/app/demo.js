@@ -31,7 +31,7 @@ export function demoPdf() {
     .cue('MAN IN BLACK')
     .dialogue('You were told not to come.')
     .blank()
-    .cue('VICTOR (ON THE PHONE)')
+    .cue('VICTOR (FILTERED)')
     .dialogue('Send it now.')
     .blank()
     .cue("VICTOR'S TEXT")

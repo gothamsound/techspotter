@@ -34,11 +34,14 @@ async function parsedFixture() {
   return parseShow(await extractRuns(sp.build()));
 }
 
-test('channel variants offer folds; TEXT channel does not', async () => {
+test('ON THE PHONE collapses silently; VOICE offers; TEXT converts', async () => {
   const p = await parsedFixture();
+  // Peter's ruling: INTERCUT / PRELAP / ON THE PHONE are ALWAYS the same
+  // character — no separate column, no offer, dialogue accrues to the base.
+  assert.ok(!p.characters.some((c) => c.name === 'MYRON (ON THE PHONE)'));
+  assert.match(p.scenes[0].dialogue_by_character.MYRON, /Where is she\?/);
   const offers = p.merge_offers.filter((o) => o.channel);
   assert.deepEqual(offers, [
-    { variant: 'MYRON (ON THE PHONE)', canonical: 'MYRON', channel: true },
     { variant: "WIN'S VOICE", canonical: 'WIN', channel: true },
   ]);
   assert.ok(!p.merge_offers.some((o) => o.variant === "MYRON'S TEXT"));
@@ -61,7 +64,7 @@ test('TEXT-channel cue emits a phone-screen moment with the message', async () =
 
 test('committing a channel offer folds scenes and dialogue', async () => {
   const p = await parsedFixture();
-  mergeCharacters(p, 'MYRON (ON THE PHONE)', 'MYRON');
-  assert.ok(!p.characters.some((c) => c.name === 'MYRON (ON THE PHONE)'));
-  assert.match(p.scenes[0].dialogue_by_character.MYRON, /Where is she\?/);
+  mergeCharacters(p, "WIN'S VOICE", 'WIN');
+  assert.ok(!p.characters.some((c) => c.name === "WIN'S VOICE"));
+  assert.match(p.scenes[0].dialogue_by_character.WIN, /Articulate your position\./);
 });

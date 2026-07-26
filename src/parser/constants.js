@@ -18,10 +18,15 @@ export function bandOf(x) {
   return 'other';
 }
 
-// The four standard cue tags that collapse to the same character (brief
-// §3.2). Any other trailing parenthetical is a distinct-performer
-// qualifier (brief §3.3).
-export const CUE_TAGS = new Set(['V.O.', 'O.S.', 'O.C.', "CONT'D"]);
+// Cue tags that collapse SILENTLY to the same character: the brief §3.2
+// four, plus Peter's ruling (2026-07-26): INTERCUT, PRELAP, and ON THE
+// PHONE are ALWAYS the same character (with spelling kin). Any other
+// trailing parenthetical is a distinct-performer qualifier (brief §3.3)
+// or an offer-only channel variant.
+export const CUE_TAGS = new Set([
+  'V.O.', 'O.S.', 'O.C.', "CONT'D",
+  'ON THE PHONE', 'ON PHONE', 'INTERCUT', 'PRE-LAP', 'PRELAP',
+]);
 
 // Words that mark a cue-shaped line as prose, not a character (brief §3.2).
 // Conjunctions plus the brief-named FROM only. Prepositions are NOT stop
@@ -36,11 +41,12 @@ export const CUE_STOP_WORDS = new Set([
 // 2026-07-26, MB TONY STARBUCK pass; federation motion filed). Used for
 // OFFER-ONLY suggestions, never automatic folds. Delete this block and
 // consume the shared policy data when scriptparse v0.2 ships.
+// (ON THE PHONE / INTERCUT / PRELAP moved to CUE_TAGS by the same ruling:
+// they collapse silently now, no offer needed.)
 export const CHANNEL_QUALS = new Set([
-  'ON THE PHONE', 'ON PHONE', 'OVER PHONE', 'OVER THE PHONE', 'INTO PHONE',
-  'ON SPEAKER', 'SPEAKERPHONE', 'INTERCUT', 'FILTERED', 'ON RADIO',
+  'OVER PHONE', 'OVER THE PHONE', 'INTO PHONE',
+  'ON SPEAKER', 'SPEAKERPHONE', 'FILTERED', 'ON RADIO',
   'OVER RADIO', 'ON TV', 'ON THE TV', 'ON MONITOR', 'ON VIDEO', 'ON SCREEN',
-  'PRE-LAP', 'PRELAP',
 ]);
 // Possessive channels that ARE performed (a voice is acted): offer a fold.
 export const VOICE_CHANNEL_RE = /^(.+)'S VOICE$/;
