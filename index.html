@@ -21,12 +21,12 @@
     <div class="ingest" id="dropzone">
       <div class="ic">⬍</div>
       <div class="t">
-        <b id="dzTitle">Drag a script PDF here</b>
-        <span id="dzSub">…or choose a file. Parsing happens in this tab; the script never leaves your device. (.sceneline import arrives with exports.)</span>
+        <b id="dzTitle">Drag a script PDF or a .sceneline here</b>
+        <span id="dzSub">…or choose a file. Drop a .pdf to parse, or a .sceneline to load a reviewed show instantly. Everything happens in this tab; the script never leaves your device.</span>
         <div class="dz-progress" id="dzProgress" hidden><div class="dz-bar" id="dzBar"></div></div>
       </div>
       <button class="btn primary" id="ingestBtn">Choose file…</button>
-      <input type="file" id="fileInput" accept="application/pdf,.pdf" class="hide">
+      <input type="file" id="fileInput" accept="application/pdf,.pdf,.sceneline,application/json" class="hide">
     </div>
 
     <div class="errbar" id="errBar" hidden></div>
@@ -41,9 +41,14 @@
         <label class="vk"><input type="checkbox" id="vVideo" checked>🎬 video</label>
       </div>
       <div class="mx-export">
-        <button class="btn" disabled title="Exports arrive with M4">Export .sceneline</button>
-        <button class="btn" disabled title="Exports arrive with M4">Export grid</button>
-        <button class="btn" disabled title="Print arrives with M4">Print / PDF</button>
+        <select class="profsel" id="profSel" title="lean shares safely (no script text, snippets capped at 120 chars); full carries dialogue and action text and is as sensitive as the screenplay itself">
+          <option value="lean" selected>lean</option>
+          <option value="full">full</option>
+        </select>
+        <button class="btn" id="exportSceneline" title="The interchange file the whole tool family reads">Export .sceneline</button>
+        <button class="btn" id="exportCsv" title="Matrix as CSV">CSV</button>
+        <button class="btn" id="exportXlsx" title="Workbook: Matrix, Sound, Video sheets">XLSX</button>
+        <button class="btn" id="printBtn" title="Letter-landscape matrix; use the browser's Save as PDF">Print / PDF</button>
       </div>
       <div class="rolekey">
         <span><i style="background:var(--armed)"></i>speaks</span>

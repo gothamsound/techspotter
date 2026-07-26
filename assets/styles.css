@@ -94,7 +94,8 @@ button{font-family:inherit}
 .vk input{accent-color:var(--armed);margin:0}
 .vk.off{opacity:.45;cursor:default}
 .vk.off:hover{border-color:var(--line);color:var(--txt-2)}
-.mx-export{display:flex;gap:8px}
+.mx-export{display:flex;gap:8px;align-items:center}
+.profsel{font-family:var(--mono);font-size:var(--fs-meta);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 6px;color:var(--txt-2)}
 .rolekey{display:flex;gap:14px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2);margin-left:auto;flex-wrap:wrap}
 .rolekey i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
 
@@ -213,3 +214,22 @@ tr.mrow td{background:var(--raised);padding:10px 14px}
 .peek img:not([src]){display:none}
 .pk-cap{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-2);padding:5px 4px 2px;letter-spacing:.04em}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---- print: the matrix as a letter-landscape artifact ----
+   Explicit dimensions, NOT `size:letter landscape`: the keyword makes
+   Chrome build landscape by ROTATING portrait media, and when the print
+   dialog's own orientation setting disagrees the rotations stack and the
+   saved PDF comes out upside-down (bit the family 2026-07-11). Explicit
+   W x H is simply landscape-shaped; nothing rotates. */
+@media print{
+  @page{size:11in 8.5in;margin:8mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:var(--bg)}
+  .topbar,.ingest,.mx-tools,.addbar,.castwarn,.errbar,.foot,.peek,.delx{display:none!important}
+  tr.mrow{display:none!important}
+  .screen{padding:0}
+  .mx-wrap{overflow:visible;max-height:none;border:none;border-radius:0}
+  table.mx thead th,th.scnh,td.scn{position:static}
+  table.mx tr{break-inside:avoid;page-break-inside:avoid}
+  tr:hover td,tr:hover td.scn{background:var(--panel)}
+}

@@ -24,7 +24,7 @@ export function addCharacter(parsed, name, sceneIds = null) {
   if (!parsed.characters.some((c) => c.name === nm)) {
     parsed.characters.push({ name: nm, scenes: [], scene_count: 0, added: true });
   }
-  refresh(parsed);
+  recompute(parsed);
   return parsed;
 }
 
@@ -43,6 +43,8 @@ export function dismissReject(parsed, name, reason = null) {
   parsed.rejects = parsed.rejects.filter(
     (r) => !(r.name === name && (reason === null || r.reason === reason)),
   );
+  parsed.review_dismissed ??= [];
+  parsed.review_dismissed.push({ kind: 'reject-chip', name, reason });
   return parsed;
 }
 
@@ -52,7 +54,7 @@ export function toggleSpeaker(parsed, sceneId, name) {
   const i = scene.characters_speaking.indexOf(name);
   if (i >= 0) scene.characters_speaking.splice(i, 1);
   else scene.characters_speaking.push(name);
-  refresh(parsed);
+  recompute(parsed);
   return parsed;
 }
 
@@ -79,7 +81,7 @@ export function cycleCell(parsed, sceneId, name) {
     scene.present_dismissed = scene.present_dismissed.filter((n) => n !== name);
     scene.characters_speaking.push(name);
   }
-  refresh(parsed);
+  recompute(parsed);
   return parsed;
 }
 
@@ -99,7 +101,7 @@ export function renameCharacter(parsed, oldName, newName) {
   }
   const entry = parsed.characters.find((c) => c.name === oldName);
   if (entry) entry.name = nm;
-  refresh(parsed);
+  recompute(parsed);
   return parsed;
 }
 
@@ -110,7 +112,7 @@ export function deleteCharacter(parsed, name) {
     delete scene.dialogue_by_character[name];
   }
   parsed.characters = parsed.characters.filter((c) => c.name !== name);
-  refresh(parsed);
+  recompute(parsed);
   return parsed;
 }
 
@@ -132,21 +134,28 @@ export function mergeCharacters(parsed, variant, canonical) {
     }
   }
   parsed.characters = parsed.characters.filter((c) => c.name !== variant);
-  refresh(parsed);
+  // Operator identity rulings ride the interchange (spec rev e): a
+  // committed fold is a cast_aliases entry.
+  parsed.cast_aliases ??= {};
+  parsed.cast_aliases[variant] = canonical;
+  recompute(parsed);
   return parsed;
 }
 
 export function dismissOffer(parsed, variant, canonical) {
   parsed.dismissed_offers ??= [];
   parsed.dismissed_offers.push({ variant, canonical });
-  refresh(parsed);
+  // null pins keep-separate: an explicit "different people" ruling (rev e).
+  parsed.cast_aliases ??= {};
+  parsed.cast_aliases[variant] = null;
+  recompute(parsed);
   return parsed;
 }
 
 // Recomputes per-character scene lists from the scenes (the source of
 // truth) while preserving the roster: operator-added or toggled-to-zero
 // characters keep their column.
-function refresh(parsed) {
+export function recompute(parsed) {
   const derived = new Map(deriveCharacters(parsed.scenes).map((c) => [c.name, c]));
   const roster = new Map(parsed.characters.map((c) => [c.name, c]));
   const names = new Set([...roster.keys(), ...derived.keys()]);

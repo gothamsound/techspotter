@@ -65,6 +65,11 @@ payload is a single UTF-8 JSON object.
    never collapses, renames, or removes `show.characters` entries (rule 2
    stands), and writers MUST NOT apply it destructively to `show`. Readers
    that do not understand it ignore it; absence means no rulings recorded.
+6. **`scenes[].present_confirmed` (optional, additive; rev f)** records
+   operator-confirmed presence WITHOUT lines, for tools that distinguish
+   "in the scene, silent" from "speaks" (TechSpotter's matrix does). Rule 3
+   stands for tools without the distinction: they MAY fold confirmed
+   presence into `speakers` as before. Readers ignore the field if unknown.
 
 ## 3. Extensions — the interoperability keystone
 
@@ -174,3 +179,8 @@ rulings as a derivation input; never collapses `show.characters`) and §3.5
 source anchors (one geometry: PDF user space, bottom-left origin, points,
 viewed frame, through Form XObject CTMs, `{source_doc, page}`). No
 `interchange` bump; both additive per §6.*
+
+*Rev 2026-07-26f — additive: `scenes[].present_confirmed` (§2 rule 6)
+records operator-confirmed silent presence, preserving the speaks vs
+present-no-lines distinction TechSpotter's matrix draws (Peter,
+2026-07-26). No `interchange` bump.*

@@ -18,6 +18,8 @@ import { openAndExtract } from './pdftext.js';
 import { spotShow } from '../spot/index.js';
 import { renderPeek } from './peek.js';
 import { render } from './render.js';
+import { buildSceneline, parseSceneline, IngestError } from '../export/sceneline.js';
+import { matrixRows, matrixCsv, momentRows } from '../export/grid.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,6 +27,8 @@ const state = {
   parsed: null,
   spot: null,
   pdfDoc: null,
+  sourceFile: null,
+  foreign: null, // preserved foreign extension blocks + unknown top-level fields
   search: '',
   view: { chars: true, sound: true, video: true },
   // bar: {mode:'add', name, ids:Set, dirty} | {mode:'rename', target, name}
@@ -274,6 +278,8 @@ async function loadPdf(bytes, label) {
     state.pdfDoc = doc;
     state.parsed = parsed;
     state.spot = spotShow(parsed, { sourceDoc: label });
+    state.sourceFile = label;
+    state.foreign = { top: {}, extensions: {} };
     state.openMoments = null;
     state.bar = null;
     state.search = '';
@@ -294,13 +300,94 @@ async function loadPdf(bytes, label) {
 
 async function loadFile(file) {
   if (!file) return;
+  if (/\.sceneline$/i.test(file.name) || file.type === 'application/json') {
+    loadSceneline(await file.text(), file.name);
+    return;
+  }
   if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
-    $('errBar').textContent = `${file.name} is not a PDF. Drop the screenplay PDF here.`;
+    $('errBar').textContent = `${file.name} is not a PDF or a .sceneline. Drop the screenplay PDF or an exported show here.`;
     $('errBar').hidden = false;
     return;
   }
   loadPdf(new Uint8Array(await file.arrayBuffer()), file.name);
 }
+
+async function loadSceneline(text, label) {
+  $('errBar').hidden = true;
+  try {
+    const r = parseSceneline(text);
+    await state.pdfDoc?.destroy();
+    state.pdfDoc = null; // no PDF in memory: source peek stays dark for imports
+    state.parsed = r.parsed;
+    state.spot = r.spot;
+    state.foreign = r.foreign;
+    state.sourceFile = label;
+    state.openMoments = null;
+    state.bar = null;
+    state.search = '';
+    $('search').value = '';
+    const prof = r.source.profile ?? (r.interchange === 1 ? 'v1' : '');
+    $('dzTitle').textContent = `Loaded: ${label} — ${r.parsed.scenes.length} scenes (imported ${prof} .sceneline)`;
+    rerender();
+  } catch (e) {
+    $('errBar').textContent =
+      e instanceof IngestError ? e.message : `Could not read this .sceneline. ${e.message || e}`;
+    $('errBar').hidden = false;
+  }
+}
+
+/* ---- exports ---- */
+
+function download(name, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+function baseName() {
+  return (state.sourceFile ?? 'show').replace(/\.(pdf|sceneline)$/i, '').replace(/\.full$/i, '');
+}
+
+$('exportSceneline').addEventListener('click', () => {
+  if (!state.parsed) return;
+  const profile = $('profSel').value;
+  const out = buildSceneline(state.parsed, state.spot, {
+    profile,
+    sourceFile: state.sourceFile ?? '',
+    foreign: state.foreign,
+  });
+  const name = `${baseName()}${profile === 'full' ? '.full' : ''}.sceneline`;
+  download(name, new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' }));
+});
+
+$('exportCsv').addEventListener('click', () => {
+  if (!state.parsed) return;
+  download(
+    `${baseName()}-matrix.csv`,
+    new Blob([matrixCsv(state.parsed)], { type: 'text/csv' }),
+  );
+});
+
+$('exportXlsx').addEventListener('click', async () => {
+  if (!state.parsed) return;
+  const XLSX = await import('../../vendor/sheetjs/xlsx.mjs');
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(matrixRows(state.parsed)), 'Matrix');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(momentRows(state.spot?.sound.moments ?? [])), 'Sound');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(momentRows(state.spot?.video.moments ?? [])), 'Video');
+  const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+  download(
+    `${baseName()}.xlsx`,
+    new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+  );
+});
+
+$('printBtn').addEventListener('click', () => {
+  if (!state.parsed) return;
+  window.print();
+});
 
 const dz = $('dropzone');
 dz.addEventListener('click', () => $('fileInput').click());
