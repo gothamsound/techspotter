@@ -36,7 +36,7 @@ export const PHONE_PAREN = /^\(\s*(?:(?:into|on|over|through)\s+(?:the\s+)?(?:ph
 // (per Peter's ruling the printed channel variant IS the far-end marker).
 export const FAR_END_CUE = /\((?:V\.O\.|O\.S\.|O\.C\.|FILTERED|OVER (?:THE )?PHONE|ON (?:THE )?PHONE|INTO PHONE)\)|'S (?:VOICE|TEXT|PHONE)\b/;
 
-export const SFX_NOUNS = /\b(knock(?:ing|s)?|gunshots?|gunfire|shots?|explosions?|blasts?|booms?|sirens?|alarms?|doorbell|crash(?:es|ing)?|thuds?|screams?(?:ing)?|shatter(?:s|ing)?|honk(?:s|ing)?|buzz(?:es|ing)?|pings?|chimes?|clicks?|bangs?|slam(?:s|ming)?|footsteps|screech(?:es|ing)?|clatters?)\b/i;
+export const SFX_NOUNS = /\b(knock(?:ing|s)?|gunshots?|gunfire|shots?|explosions?|blasts?|booms?|sirens?|alarms?|doorbell|crash(?:es|ing)?|thuds?|screams?(?:ing)?|shatter(?:s|ing)?|honk(?:s|ing)?|buzz(?:es|ing)?|pings?|chimes?|clicks?|bangs?|slam(?:s|ming)?|footsteps|screech(?:es|ing)?|clatters?|blar(?:es?|ing))\b/i;
 
 export const REACTION_VERBS = /\b(?:hears?|reacts?|startle[sd]?|jumps?|spins?|turns? toward|freezes?|ducks?|flinch(?:es)?|whirls?|winces?|jolts?)\b/i;
 
@@ -45,6 +45,13 @@ export const CAPS_IGNORE = new Set([
   'TV', 'POV', 'CU', 'ECU', 'MOS', 'OK', 'AM', 'PM', 'ID', 'DJ', 'VS',
   'II', 'III', 'IV', 'O.S.', 'V.O.', 'O.C.', "CONT'D", 'INT.', 'EXT.',
 ]);
+
+// Camera and editorial directions in caps are screen furniture, not sounds
+// (a real "TV BLARES" still fires through the noun lexicon).
+export const CAPS_IGNORE_RE = [
+  /^(?:ON THE |ON )?(?:TV|SCREEN|PHONE|PHONE SCREEN|MONITOR|LAPTOP)\b/,
+  /^(?:INSERT|ANGLE ON|CLOSE ON|CLOSER ON|WIDE ON|PUSH IN|BACK TO|INTERCUT|TITLE|SUPER|CHYRON)\b/,
+];
 
 export const VIDEO_TRIGGERS = {
   'phone-screen': [

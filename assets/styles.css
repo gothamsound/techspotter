@@ -168,6 +168,31 @@ td.cell.pend:hover .d{border-color:var(--warn);background:rgba(247,178,62,.22)}
 .delx:hover{color:var(--live);border-color:var(--live)}
 .delx.armed{background:var(--live);border-color:transparent;color:#fff;box-shadow:0 0 8px rgba(255,70,54,.5)}
 
+/* ---- department badge columns + moment panel ---- */
+th.bdgh{min-width:46px;text-align:center;vertical-align:bottom;padding:0 0 8px;font-size:15px}
+td.bdg{width:46px;text-align:center;cursor:pointer}
+.bpill{display:inline-block;min-width:26px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);border:1px solid var(--line);border-radius:7px;padding:3px 6px;transition:.1s}
+td.bdg.snd.has .bpill{color:var(--warn);border-color:var(--warn-dim)}
+td.bdg.vid.has .bpill{color:var(--cool);border-color:var(--cool-dim)}
+td.bdg:hover .bpill{border-color:var(--txt-2)}
+td.bdg.open .bpill{background:var(--raised-2);color:var(--txt);border-color:var(--txt-2)}
+tr.mrow td{background:var(--raised);padding:10px 14px}
+.m-head{font-family:var(--disp);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:var(--fs-tag);color:var(--txt-2);margin-bottom:6px}
+.moment{display:flex;gap:12px;align-items:flex-start;padding:8px 11px;border:1px solid var(--line-soft);border-radius:8px;margin:6px 0;background:var(--panel);max-width:900px}
+.moment.dismissed{opacity:.4}
+.m-cat{font-family:var(--mono);font-size:var(--fs-tag);letter-spacing:.06em;text-transform:uppercase;border:1px solid;border-radius:6px;padding:3px 7px;white-space:nowrap;flex:none}
+.m-cat.snd{color:var(--warn);border-color:var(--warn-dim)}
+.m-cat.vid{color:var(--cool);border-color:var(--cool-dim)}
+.m-snip{font-family:var(--mono);font-size:var(--fs-meta);white-space:pre-wrap;color:var(--txt);flex:1;min-width:0}
+.m-meta{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-3);white-space:nowrap;flex:none;text-align:right;line-height:1.7}
+.m-meta .conf-high{color:var(--armed)}
+.m-meta .conf-medium{color:var(--warn)}
+.m-meta .conf-low{color:var(--txt-3)}
+.m-x{font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);background:transparent;border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer;flex:none}
+.m-x:hover{color:var(--live);border-color:var(--live)}
+.moment.dismissed .m-x:hover{color:var(--armed);border-color:var(--armed-dim)}
+.m-none{font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);padding:6px 0}
+
 .mx-foot{display:flex;gap:18px;padding:11px 4px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2);flex-wrap:wrap}
 .mx-foot b{color:var(--txt)}
 

@@ -93,12 +93,21 @@ function renderMatrix(state, act, table) {
   const q = state.search.trim().toUpperCase();
   const chars = state.view.chars ? p.characters : [];
   const adding = state.bar?.mode === 'add' ? state.bar : null;
+  const layers = [];
+  if (state.spot && state.view.sound) layers.push(['sound', '🔊', 'snd']);
+  if (state.spot && state.view.video) layers.push(['video', '🎬', 'vid']);
+  const totalCols = 1 + layers.length + (adding ? 1 : 0) + chars.length;
 
   const thead = el('thead');
   const trh = el('tr');
   const scnh = el('th', 'scnh');
   scnh.textContent = `SCENES (${p.scenes.length})`;
   trh.append(scnh);
+  for (const [, icon] of layers) {
+    const th = el('th', 'bdgh');
+    th.textContent = icon;
+    trh.append(th);
+  }
   if (adding) {
     const th = el('th', 'pend-h');
     const rot = el('span', 'rot');
@@ -141,6 +150,23 @@ function renderMatrix(state, act, table) {
     sl.title = scene.heading;
     scn.append(s, sl);
     tr.append(scn);
+    for (const [layer, , cls] of layers) {
+      const moments = state.spot[layer].moments.filter((m) => m.scene === scene.id);
+      const live = moments.filter((m) => !m.dismissed).length;
+      const td = el('td', `bdg ${cls}`);
+      if (live) td.classList.add('has');
+      if (state.openMoments?.sceneId === scene.id && state.openMoments?.layer === layer) {
+        td.classList.add('open');
+      }
+      const pill = el('span', 'bpill');
+      pill.textContent = live || '·';
+      td.title = moments.length
+        ? `${live} live / ${moments.length} total ${layer} moment${moments.length === 1 ? '' : 's'} — click to review`
+        : `no ${layer} moments detected`;
+      td.append(pill);
+      td.onclick = () => act.toggleMoments(scene.id, layer);
+      tr.append(td);
+    }
     if (adding) {
       const td = el('td', 'cell pend');
       if (adding.ids.has(scene.id)) td.classList.add('on');
@@ -157,8 +183,58 @@ function renderMatrix(state, act, table) {
       tr.append(td);
     }
     tbody.append(tr);
+    if (state.openMoments?.sceneId === scene.id) {
+      const open = layers.find(([layer]) => layer === state.openMoments.layer);
+      if (open) tbody.append(momentRow(state, act, scene, open, totalCols));
+    }
   }
   table.append(tbody);
+}
+
+function momentRow(state, act, scene, [layer, icon, cls], colspan) {
+  const moments = state.spot[layer].moments.filter((m) => m.scene === scene.id);
+  const tr = el('tr', 'mrow');
+  const td = el('td');
+  td.colSpan = colspan;
+  const head = el('div', 'm-head');
+  head.textContent = `${icon} ${layer} · scene ${scene.id} · ${scene.heading}`;
+  td.append(head);
+  if (!moments.length) {
+    const none = el('div', 'm-none');
+    none.textContent = `No ${layer} moments detected in this scene.`;
+    td.append(none);
+  }
+  for (const m of moments) {
+    const card = el('div', 'moment');
+    if (m.dismissed) card.classList.add('dismissed');
+    const cat = el('span', `m-cat ${cls}`);
+    cat.textContent = m.category;
+    const snip = el('div', 'm-snip');
+    snip.textContent = m.snippet;
+    const meta = el('div', 'm-meta');
+    const metaLines = [
+      `pg ${m.page} · ${m.trigger}`,
+      m.characters.length ? m.characters.join(', ') : null,
+    ].filter(Boolean);
+    metaLines.forEach((t, i) => {
+      if (i) meta.append(document.createElement('br'));
+      meta.append(document.createTextNode(t));
+    });
+    meta.append(document.createElement('br'));
+    const conf = el('span', `conf-${m.confidence}`);
+    conf.textContent = m.confidence;
+    meta.append(conf);
+    const x = el('button', 'm-x');
+    x.textContent = m.dismissed ? 'restore' : 'dismiss';
+    x.title = m.dismissed
+      ? 'Bring this moment back'
+      : 'Dismiss: stays in the file as dismissed, drops from counts';
+    x.onclick = () => act.dismissMoment(m);
+    card.append(cat, snip, meta, x);
+    td.append(card);
+  }
+  tr.append(td);
+  return tr;
 }
 
 function sceneMatches(scene, q) {

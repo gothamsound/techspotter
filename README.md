@@ -13,8 +13,10 @@ matrix, correct the parser with clicks. A fully synthetic demo show (generated
 in your browser, no script text anywhere) is at
 https://gothamsound.github.io/techspotter/#demo
 
-In build: department spotting layers (Sound / Video), then exports
-(.sceneline v2, CSV/XLSX, print).
+The Sound and Video spotting layers are live: 🔊 playback / phone /
+sfx-reaction and 🎬 phone-screen / tv-screen / video-playback badges per
+scene, each with evidence (snippet, page, trigger) and per-moment dismiss.
+In build: exports (.sceneline v2, CSV/XLSX, print).
 
 ## Development
 

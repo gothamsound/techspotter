@@ -15,17 +15,20 @@ import {
   textSearchScenes,
 } from '../parser/edits.js';
 import { extractRunsFromBytes } from './pdftext.js';
+import { spotShow } from '../spot/index.js';
 import { render } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 
 const state = {
   parsed: null,
+  spot: null,
   search: '',
-  view: { chars: true },
+  view: { chars: true, sound: true, video: true },
   // bar: {mode:'add', name, ids:Set, dirty} | {mode:'rename', target, name}
   bar: null,
   armed: null, // two-tap tracking {kind, key, timer}
+  openMoments: null, // {sceneId, layer}
 };
 
 function rerender() {
@@ -104,6 +107,17 @@ const act = {
     $('abName').value = name;
     $('abName').focus();
     $('abName').select();
+  },
+  toggleMoments(sceneId, layer) {
+    disarm();
+    const same =
+      state.openMoments?.sceneId === sceneId && state.openMoments?.layer === layer;
+    state.openMoments = same ? null : { sceneId, layer };
+    rerender();
+  },
+  dismissMoment(moment) {
+    moment.dismissed = !moment.dismissed;
+    rerender();
   },
 };
 
@@ -185,6 +199,13 @@ $('vChars').addEventListener('change', () => {
   state.view.chars = $('vChars').checked;
   rerender();
 });
+for (const [id, key] of [['vSound', 'sound'], ['vVideo', 'video']]) {
+  $(id).addEventListener('change', () => {
+    state.view[key] = $(id).checked;
+    if (!state.view[key] && state.openMoments?.layer === key) state.openMoments = null;
+    rerender();
+  });
+}
 
 /* ---- ingest ---- */
 
@@ -202,6 +223,8 @@ async function loadPdf(bytes, label) {
     const pages = await extractRunsFromBytes(bytes, (p, n) => setBar(p / n));
     const parsed = parseShow(pages);
     state.parsed = parsed;
+    state.spot = spotShow(parsed, { sourceDoc: label });
+    state.openMoments = null;
     state.bar = null;
     state.search = '';
     $('search').value = '';

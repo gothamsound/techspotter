@@ -14,6 +14,7 @@ import {
   SFX_NOUNS,
   REACTION_VERBS,
   CAPS_IGNORE,
+  CAPS_IGNORE_RE,
 } from './lexicon.js';
 import {
   lineAnchor,
@@ -242,6 +243,7 @@ function capsRuns(rec, names) {
   for (const m of text.matchAll(CAPS_RUN)) {
     const run = m[1].trim();
     if (CAPS_IGNORE.has(run)) continue;
+    if (CAPS_IGNORE_RE.some((re) => re.test(run))) continue;
     if (names.has(run)) continue;
     if (run.split(/\s+/).every((w) => names.has(w))) continue;
     runs.push(run);

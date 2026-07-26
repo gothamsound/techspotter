@@ -37,8 +37,8 @@
       <button class="btn" id="addCharBtn" title="Add a character the parser missed — type the name, scenes auto-mark by text search, adjust, Save">+ Character</button>
       <div class="viewkey">
         <label class="vk"><input type="checkbox" id="vChars" checked>characters</label>
-        <label class="vk off" title="Sound spotting layer arrives with M3"><input type="checkbox" disabled>🔊 sound</label>
-        <label class="vk off" title="Video spotting layer arrives with M3"><input type="checkbox" disabled>🎬 video</label>
+        <label class="vk"><input type="checkbox" id="vSound" checked>🔊 sound</label>
+        <label class="vk"><input type="checkbox" id="vVideo" checked>🎬 video</label>
       </div>
       <div class="mx-export">
         <button class="btn" disabled title="Exports arrive with M4">Export .sceneline</button>
@@ -48,6 +48,7 @@
       <div class="rolekey">
         <span><i style="background:var(--armed)"></i>speaks in scene</span>
         <span>click a cell to toggle · click a name to rename</span>
+        <span>click a 🔊/🎬 badge for that scene's moments</span>
       </div>
     </div>
 

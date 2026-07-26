@@ -65,8 +65,9 @@ Your script never leaves your device."
 
 - Small, self-contained changes; every parser rule and detector keeps its
   fixture-backed test (brief §8 is the acceptance list).
-- Surface open questions to Peter (lyrics-block handling and far-end-caller
-  tagging are two he's flagged for review); don't silently resolve them.
+- Surface open questions to Peter; don't silently resolve them. (Lyrics-block
+  handling and far-end-caller tagging were two such: both ruled 2026-07-26,
+  encoded in `src/spot/` and its ruling-named tests.)
 - Peter co-manages direction; be critical, name tradeoffs, no glazing.
 
 ## Federation (scriptparse)
