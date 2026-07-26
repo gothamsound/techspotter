@@ -210,18 +210,24 @@ function spotPhone(scene, names, claimed, moments, opts) {
 /* ---- sfx-reaction ---- */
 
 function spotSfx(scene, names, claimed, moments, opts) {
-  // Lexicon hits are precise: one moment per line. Caps-only hits are the
-  // noisy convention: adjacent flagged lines coalesce into ONE moment so a
-  // montage passage costs one dismiss, not three.
+  // Peter's ruling (2026-07-26): sound moments are only sounds a character
+  // REACTS to (the brief's own §4.3 intent: the sound must be played for
+  // the reaction to land). A noun or caps run without a reaction verb in
+  // reach (same line or a neighbor) is scenery, not a cue. Lexicon hits
+  // stay per-line; caps-only hits coalesce per block.
   const capsOnly = [];
   scene.lines.forEach((rec, i) => {
     if (rec.band !== 'action' || claimed.has(i)) return;
     const noun = rec.text.match(SFX_NOUNS);
     const caps = capsRuns(rec, names);
     if (!noun && !caps.length) return;
+    const prev = scene.lines[i - 1];
     const next = scene.lines[i + 1];
     const reacts =
-      REACTION_VERBS.test(rec.text) || (next && REACTION_VERBS.test(next.text));
+      REACTION_VERBS.test(rec.text) ||
+      (next && REACTION_VERBS.test(next.text)) ||
+      (prev && REACTION_VERBS.test(prev.text));
+    if (!reacts) return;
     if (noun) {
       moments.push(
         makeMoment(scene, 'sfx-reaction', {
@@ -229,12 +235,12 @@ function spotSfx(scene, names, claimed, moments, opts) {
           page: rec.page,
           characters: namesOnLine(rec.text, names),
           trigger: noun[0].toLowerCase(),
-          confidence: reacts ? 'high' : 'medium',
+          confidence: 'high',
           anchor: lineAnchor(rec, opts.sourceDoc),
         }),
       );
     } else {
-      capsOnly.push({ i, rec, caps, reacts });
+      capsOnly.push({ i, rec, caps });
     }
   });
 
@@ -249,7 +255,7 @@ function spotSfx(scene, names, claimed, moments, opts) {
         page: recs[0].page,
         characters: [...new Set(recs.flatMap((r) => namesOnLine(r.text, names)))],
         trigger: block[0].caps[0],
-        confidence: block.some((b) => b.reacts) ? 'medium' : 'low',
+        confidence: 'medium',
         anchor,
         line_anchors,
       }),

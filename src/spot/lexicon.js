@@ -38,7 +38,7 @@ export const FAR_END_CUE = /\((?:V\.O\.|O\.S\.|O\.C\.|FILTERED|OVER (?:THE )?PHO
 
 export const SFX_NOUNS = /\b(knock(?:ing|s)?|gunshots?|gunfire|shots?|explosions?|blasts?|booms?|sirens?|alarms?|doorbell|crash(?:es|ing)?|thuds?|screams?(?:ing)?|shatter(?:s|ing)?|honk(?:s|ing)?|buzz(?:es|ing)?|pings?|chimes?|clicks?|bangs?|slam(?:s|ming)?|footsteps|screech(?:es|ing)?|clatters?|blar(?:es?|ing))\b/i;
 
-export const REACTION_VERBS = /\b(?:hears?|reacts?|startle[sd]?|jumps?|spins?|turns? toward|freezes?|ducks?|flinch(?:es)?|whirls?|winces?|jolts?)\b/i;
+export const REACTION_VERBS = /\b(?:hears?|reacts?|startle[sd]?|jumps?|spins?|turns? toward|freezes?|ducks?|flinch(?:es)?|whirls?|winces?|jolts?|wakes?|awakens?|scrambles?|dives?|gasps?|shudders?)\b/i;
 
 // Caps runs that are never sound effects.
 export const CAPS_IGNORE = new Set([

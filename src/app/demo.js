@@ -13,7 +13,7 @@ export function demoPdf() {
     .header('12.')
     .slugNumbered('12', 'INT. EVIDENCE LAB - NIGHT')
     .blank()
-    .action('Victor stares at the tox screen. A KNOCK at the door.')
+    .action('Victor stares at the tox screen. A KNOCK at the door; he flinches.')
     .blank()
     .cue('VICTOR')
     .dialogue('Run it again.')

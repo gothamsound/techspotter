@@ -17,7 +17,7 @@ async function edited() {
   sp.page()
     .slug('INT. LAB - NIGHT')
     .blank()
-    .action('Victor works. Dana watches from the doorway. A KNOCK at the door.')
+    .action('Victor works. Dana watches from the doorway. A KNOCK; he flinches.')
     .blank()
     .cue('VICTOR')
     .dialogue('Almost there.')
