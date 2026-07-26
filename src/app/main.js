@@ -108,6 +108,15 @@ const act = {
     $('abName').focus();
     $('abName').select();
   },
+  convertTextChannel(name) {
+    twoTap('convtext', name, () => deleteCharacter(state.parsed, name));
+  },
+  keepTextChannel(name) {
+    disarm();
+    state.parsed.text_channel_kept ??= [];
+    state.parsed.text_channel_kept.push(name);
+    rerender();
+  },
   toggleMoments(sceneId, layer) {
     disarm();
     const same =

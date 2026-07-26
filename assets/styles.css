@@ -131,7 +131,7 @@ button{font-family:inherit}
 .castwarn.mrg .mrg-chip{color:var(--txt-2);border-style:solid;cursor:default;border-color:var(--cool)}
 .castwarn.mrg .mrg-chip b{color:var(--cool);margin:0 2px;font-weight:500}
 .cw-x.mrgok:hover{color:var(--cool);border-color:var(--cool)}
-.cw-x.mrgok.armed,.cw-x.armed{color:var(--live);border-color:var(--live);background:rgba(255,70,54,.12)}
+.cw-x.mrgok.armed,.cw-x.armed,.cw-chip.armed{color:var(--live);border-color:var(--live);background:rgba(255,70,54,.12)}
 
 /* ---- matrix ---- */
 .mx-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);max-height:68vh;background:var(--panel)}

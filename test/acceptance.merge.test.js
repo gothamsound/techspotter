@@ -56,12 +56,14 @@ function fixture() {
   return sp.build();
 }
 
-test('surname variant offers a merge; qualifier variants never do', async () => {
+test('surname and channel variants offer; qualifier variants never do', async () => {
   const parsed = parseShow(await extractRuns(fixture()));
 
   assert.deepEqual(parsed.merge_offers, [
     { variant: 'VICTOR HALE', canonical: 'VICTOR' },
+    { variant: 'VALERIE (ON TV)', canonical: 'VALERIE', channel: true },
   ]);
+  assert.ok(!parsed.merge_offers.some((o) => o.variant === 'YOUNG VALERIE'));
 
   const names = parsed.characters.map((c) => c.name);
   assert.ok(names.includes('YOUNG VALERIE'));

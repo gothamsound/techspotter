@@ -31,6 +31,12 @@ export function demoPdf() {
     .cue('MAN IN BLACK')
     .dialogue('You were told not to come.')
     .blank()
+    .cue('VICTOR (ON THE PHONE)')
+    .dialogue('Send it now.')
+    .blank()
+    .cue("VICTOR'S TEXT")
+    .dialogue('On my way. Do not move.')
+    .blank()
     .cue('VICTOR')
     .dialogue('And yet.');
   sp.page()

@@ -13,15 +13,50 @@ function sp(cls, text) {
   return n;
 }
 
+import { textChannelNames } from '../parser/characters.js';
+
 export function render(state, act) {
   const p = state.parsed;
   document.getElementById('tools').hidden = !p;
   document.getElementById('mxWrap').hidden = !p;
   if (!p) return;
   renderRejRail(state, act, document.getElementById('rejRail'));
+  renderTextRail(state, act, document.getElementById('textRail'));
   renderMergeRail(state, act, document.getElementById('mergeRail'));
   renderMatrix(state, act, document.getElementById('mx'));
   renderFoot(state, document.getElementById('foot'));
+}
+
+// Text-channel conversion rail (Peter's ruling, TechSpotter presentation):
+// X'S TEXT columns are probably video cues, not performers. Convert is a
+// column deletion, so it is two-tap; keep is one.
+function renderTextRail(state, act, rail) {
+  const kept = state.parsed.text_channel_kept ?? [];
+  const candidates = textChannelNames(state.parsed.characters).filter(
+    (n) => !kept.includes(n),
+  );
+  rail.hidden = !candidates.length;
+  rail.textContent = '';
+  if (!candidates.length) return;
+  rail.append(
+    sp('cw-i', '🎬'),
+    sp('cw-t', 'texts on screen are video cues, not performers — convert is two-tap; × keeps the column'),
+  );
+  for (const name of candidates) {
+    const pair = el('span', 'rj-pair');
+    const chip = el('button', 'cw-chip');
+    const armed = state.armed?.kind === 'convtext' && state.armed.key === name;
+    chip.textContent = armed ? `confirm: ${name} → video cue` : `${name} → video cue`;
+    if (armed) chip.classList.add('armed');
+    chip.title = 'Remove this column; its phone-screen moments stay in the Video layer';
+    chip.onclick = () => act.convertTextChannel(name);
+    const x = el('button', 'cw-x');
+    x.textContent = '×';
+    x.title = 'Keep as a character column';
+    x.onclick = () => act.keepTextChannel(name);
+    pair.append(chip, x);
+    rail.append(pair);
+  }
 }
 
 function renderRejRail(state, act, rail) {
@@ -71,7 +106,10 @@ function renderMergeRail(state, act, rail) {
     const c = el('b');
     c.textContent = o.canonical;
     chip.append(v, document.createTextNode(' → '), c);
-    chip.title = `${o.canonical} is used in more scenes and stays as the column name`;
+    if (o.channel) chip.append(document.createTextNode(' · channel'));
+    chip.title = o.channel
+      ? `${o.variant} is a channel annotation of ${o.canonical} (same performer, different pipe)`
+      : `${o.canonical} is used in more scenes and stays as the column name`;
     const ok = el('button', 'cw-x mrgok');
     const armed =
       state.armed?.kind === 'merge' &&

@@ -32,6 +32,22 @@ export const CUE_STOP_WORDS = new Set([
   'AND', 'OR', 'BUT', 'FROM', 'TO', 'IF', 'VS', 'VS.',
 ]);
 
+// INTERIM MIRROR of the scriptparse v0.2 fold classes (Peter's rulings,
+// 2026-07-26, MB TONY STARBUCK pass; federation motion filed). Used for
+// OFFER-ONLY suggestions, never automatic folds. Delete this block and
+// consume the shared policy data when scriptparse v0.2 ships.
+export const CHANNEL_QUALS = new Set([
+  'ON THE PHONE', 'ON PHONE', 'OVER PHONE', 'OVER THE PHONE', 'INTO PHONE',
+  'ON SPEAKER', 'SPEAKERPHONE', 'INTERCUT', 'FILTERED', 'ON RADIO',
+  'OVER RADIO', 'ON TV', 'ON THE TV', 'ON MONITOR', 'ON VIDEO', 'ON SCREEN',
+  'PRE-LAP', 'PRELAP',
+]);
+// Possessive channels that ARE performed (a voice is acted): offer a fold.
+export const VOICE_CHANNEL_RE = /^(.+)'S VOICE$/;
+// Possessive channels that are NOT performances: a text on a screen is a
+// video cue, not a character (Peter's ruling). Offered as a conversion.
+export const TEXT_CHANNEL_RE = /^(.+)'S (?:TEXTS?|POSTS?|DMS?)$/;
+
 const FURNITURE_RE = /^(EPISODE|ACT|PART|DAY|SCENE|CHAPTER|TEASER|COLD OPEN|TITLE|END OF)\b/;
 
 export function isFurniture(text) {
