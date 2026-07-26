@@ -195,4 +195,4 @@ and assert on parser output (pure module, no browser):
 Product name: **TechSpotter** (the phase of production this serves — work done at
 the table). Suggested repo: `gothamsound/techspotter`, GitHub Pages from `main`.
 Footer: "TechSpotter — all processing happens in your browser. Your script never
-leaves this machine."
+leaves your device."

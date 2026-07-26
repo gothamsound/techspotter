@@ -59,7 +59,7 @@ Live since 2026-07-26: public repo `gothamsound/techspotter` (this clone is
 https://gothamsound.github.io/techspotter/. Public history starts at the
 sanitized root; keep it that way (no real-production strings in commits).
 Footer on the page: "TechSpotter — all processing happens in your browser.
-Your script never leaves this machine."
+Your script never leaves your device."
 
 ## Working agreement
 

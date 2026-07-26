@@ -1,11 +1,11 @@
 # TechSpotter
 
-Drop a screenplay PDF, get the scene-by-character matrix a table-read crew
-preps from, plus two department spotting layers: Sound (playback, phone calls,
-sound reactions) and Video (phone screens, TV screens, video playback).
+Drop a screenplay PDF, get the scene-by-character matrix plus two department
+spotting layers: Sound (playback, phone calls, sound reactions) and Video
+(phone screens, TV screens, video playback).
 
-**All processing happens in your browser. Your script never leaves this
-machine.** After page load the site makes zero network requests: no CDNs, no
+**All processing happens in your browser. Your script never leaves your
+device.** After page load the site makes zero network requests: no CDNs, no
 analytics, no telemetry.
 
 Status: in build. The placeholder is live at
