@@ -47,6 +47,13 @@ export class Screenplay {
     return this;
   }
 
+  // Per-page recipient burn-in: a stamp at a fixed position, optionally
+  // rotated (diagonal watermark).
+  burnin(text, { x = 108, y = 700, rotate = false } = {}) {
+    this.#pages.at(-1).push({ x, y, text, rotate });
+    return this;
+  }
+
   header(text, x = X.headerPage) {
     this.#pages.at(-1).push({ x, y: HEADER_Y, text });
     return this;

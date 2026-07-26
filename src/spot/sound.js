@@ -210,6 +210,10 @@ function spotPhone(scene, names, claimed, moments, opts) {
 /* ---- sfx-reaction ---- */
 
 function spotSfx(scene, names, claimed, moments, opts) {
+  // Lexicon hits are precise: one moment per line. Caps-only hits are the
+  // noisy convention: adjacent flagged lines coalesce into ONE moment so a
+  // montage passage costs one dismiss, not three.
+  const capsOnly = [];
   scene.lines.forEach((rec, i) => {
     if (rec.band !== 'action' || claimed.has(i)) return;
     const noun = rec.text.match(SFX_NOUNS);
@@ -218,18 +222,48 @@ function spotSfx(scene, names, claimed, moments, opts) {
     const next = scene.lines[i + 1];
     const reacts =
       REACTION_VERBS.test(rec.text) || (next && REACTION_VERBS.test(next.text));
-    const confidence = noun ? (reacts ? 'high' : 'medium') : reacts ? 'medium' : 'low';
+    if (noun) {
+      moments.push(
+        makeMoment(scene, 'sfx-reaction', {
+          snippet: snippetAt(scene, i),
+          page: rec.page,
+          characters: namesOnLine(rec.text, names),
+          trigger: noun[0].toLowerCase(),
+          confidence: reacts ? 'high' : 'medium',
+          anchor: lineAnchor(rec, opts.sourceDoc),
+        }),
+      );
+    } else {
+      capsOnly.push({ i, rec, caps, reacts });
+    }
+  });
+
+  let block = [];
+  const flush = () => {
+    if (!block.length) return;
+    const recs = block.map((b) => b.rec);
+    const { anchor, line_anchors } = blockAnchor(recs, opts.sourceDoc);
     moments.push(
       makeMoment(scene, 'sfx-reaction', {
-        snippet: snippetAt(scene, i),
-        page: rec.page,
-        characters: namesOnLine(rec.text, names),
-        trigger: noun ? noun[0].toLowerCase() : caps[0],
-        confidence,
-        anchor: lineAnchor(rec, opts.sourceDoc),
+        snippet: recs.map((r) => r.text.trim()).join('\n').slice(0, 240),
+        page: recs[0].page,
+        characters: [...new Set(recs.flatMap((r) => namesOnLine(r.text, names)))],
+        trigger: block[0].caps[0],
+        confidence: block.some((b) => b.reacts) ? 'medium' : 'low',
+        anchor,
+        line_anchors,
       }),
     );
+    block = [];
+  };
+  capsOnly.forEach((b, k) => {
+    if (k > 0 && capsOnly[k - 1].i === b.i - 1) block.push(b);
+    else {
+      flush();
+      block = [b];
+    }
   });
+  flush();
 }
 
 // The caps convention (brief §4.3): all-caps runs inside MIXED-case action
@@ -242,6 +276,9 @@ function capsRuns(rec, names) {
   const runs = [];
   for (const m of text.matchAll(CAPS_RUN)) {
     const run = m[1].trim();
+    // long caps runs are montage/sequence descriptors, not sounds: real
+    // sound caps are short (GUNSHOT, PHONE RINGS, KNOCK KNOCK)
+    if (run.split(/\s+/).length > 4 || run.length > 30) continue;
     if (CAPS_IGNORE.has(run)) continue;
     if (CAPS_IGNORE_RE.some((re) => re.test(run))) continue;
     if (names.has(run)) continue;

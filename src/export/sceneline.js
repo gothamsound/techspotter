@@ -73,6 +73,7 @@ export function buildSceneline(parsed, spot, opts = {}) {
         rejects: structuredClone(parsed.rejects ?? []),
         dismissed_offers: structuredClone(parsed.dismissed_offers ?? []),
         text_channel_kept: structuredClone(parsed.text_channel_kept ?? []),
+        burn_ins: structuredClone(parsed.burn_ins ?? []),
       },
     },
   };
@@ -120,6 +121,7 @@ export function parseSceneline(text) {
     merge_offers: [],
     dismissed_offers: structuredClone(xt.dismissed_offers ?? []),
     text_channel_kept: structuredClone(xt.text_channel_kept ?? []),
+    burn_ins: structuredClone(xt.burn_ins ?? []),
     cast_aliases: structuredClone(show.cast_aliases ?? {}),
     review_dismissed: structuredClone(show.review_dismissed ?? []),
   };

@@ -42,6 +42,7 @@ export function demoPdf() {
   sp.page()
     .header('"MYSHOW" - Ep. 101', 108)
     .header('13.')
+    .burnin('Copy of Pat Recipient', { x: 260, y: 400, rotate: true })
     .slugNumbered('14', 'INT. HR OFFICE - DAY')
     .blank()
     .action('The PHONE RINGS. Victor snatches it up.')

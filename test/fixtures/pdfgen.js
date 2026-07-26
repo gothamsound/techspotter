@@ -19,7 +19,11 @@ export function buildPdf(pages) {
       `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`,
     );
     const stream = page.runs
-      .map((r) => `BT /${r.italic ? 'F2' : 'F1'} 12 Tf ${r.x} ${r.y} Td (${esc(r.text)}) Tj ET`)
+      .map((r) =>
+        r.rotate
+          ? `BT /${r.italic ? 'F2' : 'F1'} 12 Tf 0.7071 0.7071 -0.7071 0.7071 ${r.x} ${r.y} Tm (${esc(r.text)}) Tj ET`
+          : `BT /${r.italic ? 'F2' : 'F1'} 12 Tf ${r.x} ${r.y} Td (${esc(r.text)}) Tj ET`,
+      )
       .join('\n');
     objs.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
   }

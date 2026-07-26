@@ -13,5 +13,8 @@ export function normalizePage(textContent) {
       y: it.transform[5],
       width: it.width || 0,
       font: it.fontName ?? null,
+      // rotation/skew flag: screenplay body text is never rotated, so a
+      // rotated run is a watermark or stamp by definition
+      rot: Math.abs(it.transform[1]) > 0.01 || Math.abs(it.transform[2]) > 0.01,
     }));
 }

@@ -8,6 +8,7 @@ import { parseHeading } from './heading.js';
 import { evaluateCue } from './cues.js';
 import { deriveCharacters, findMergeOffers } from './characters.js';
 import { derivePresence } from './presence.js';
+import { stripBurnIns } from './burnin.js';
 
 export class ParseError extends Error {
   constructor(code, message) {
@@ -17,13 +18,15 @@ export class ParseError extends Error {
   }
 }
 
-export function parseShow(pages) {
-  if (!pages.length || pages.every((p) => !p.length)) {
+export function parseShow(rawPages) {
+  if (!rawPages.length || rawPages.every((p) => !p.length)) {
     throw new ParseError(
       'no-text',
       'No text layer found in this PDF. It may be a scan (image-only); TechSpotter needs a text PDF.',
     );
   }
+
+  const { pages, burnIns } = stripBurnIns(rawPages);
 
   const sheets = pages.map((runs, i) => {
     const lines = groupLines(runs);
@@ -193,6 +196,7 @@ export function parseShow(pages) {
     characters,
     rejects: [...rejectMap.values()],
     merge_offers: findMergeOffers(characters),
+    burn_ins: burnIns,
   });
 }
 

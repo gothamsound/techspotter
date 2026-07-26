@@ -12,14 +12,17 @@ function fixture() {
   const sp = new Screenplay();
   const times = ['NIGHT', 'DAY', 'DUSK', 'DAWN', 'LATER', 'NIGHT'];
   for (let i = 1; i <= 6; i++) {
+    // realistic page flow: content drifts and varies; only the watermark
+    // letter repeats in the cue band (all-caps single glyph = the brief's
+    // §3.2 gate territory, exempt from burn-in stripping)
     sp.page()
       .header(`${i}.`)
       .slugNumbered(String(i), `INT. SAFEHOUSE - ${times[i - 1]}`)
-      .blank()
+      .blank(1 + (i % 2))
       .cue('VICTOR')
-      .dialogue('We move at dawn.')
+      .dialogue(`We move at dawn, remember plan ${i}.`)
       .cue('S')
-      .dialogue('Stay close to me.');
+      .dialogue(`Stay close to me on stairwell ${i}.`);
   }
   return sp.build();
 }
@@ -39,7 +42,7 @@ test('watermark letter: one aggregated chip, dialogue not stolen', async () => {
   assert.equal(parsed.characters[0].scene_count, 6);
 
   for (const scene of parsed.scenes) {
-    assert.match(scene.dialogue_by_character.VICTOR, /We move at dawn\./);
-    assert.match(scene.dialogue_by_character.VICTOR, /Stay close to me\./);
+    assert.match(scene.dialogue_by_character.VICTOR, /We move at dawn/);
+    assert.match(scene.dialogue_by_character.VICTOR, /Stay close to me/);
   }
 });
