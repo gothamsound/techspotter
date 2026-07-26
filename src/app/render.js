@@ -140,13 +140,17 @@ function renderMatrix(state, act, table) {
   const layers = [];
   if (state.spot && state.view.sound) layers.push(['sound', '🔊', 'snd']);
   if (state.spot && state.view.video) layers.push(['video', '🎬', 'vid']);
-  const totalCols = 1 + layers.length + (adding ? 1 : 0) + chars.length;
+  const totalCols = 2 + layers.length + (adding ? 1 : 0) + chars.length;
 
   const thead = el('thead');
   const trh = el('tr');
   const scnh = el('th', 'scnh');
   scnh.textContent = `SCENES (${p.scenes.length})`;
   trh.append(scnh);
+  const spkh = el('th', 'bdgh');
+  spkh.textContent = '🗣';
+  spkh.title = 'Speaking characters in the scene';
+  trh.append(spkh);
   for (const [, icon] of layers) {
     const th = el('th', 'bdgh');
     th.textContent = icon;
@@ -194,6 +198,16 @@ function renderMatrix(state, act, table) {
     sl.title = scene.heading;
     scn.append(s, sl);
     tr.append(scn);
+    const spk = el('td', 'bdg spk');
+    const n = scene.characters_speaking.length;
+    const spill = el('span', 'bpill');
+    spill.textContent = n || '·';
+    if (n) spk.classList.add('has');
+    spk.title = n
+      ? `${n} speaking: ${scene.characters_speaking.join(', ')}`
+      : 'no speaking characters detected';
+    spk.append(spill);
+    tr.append(spk);
     for (const [layer, , cls] of layers) {
       const moments = state.spot[layer].moments.filter((m) => m.scene === scene.id);
       const live = moments.filter((m) => !m.dismissed).length;

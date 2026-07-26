@@ -172,6 +172,8 @@ td.cell.pend:hover .d{border-color:var(--warn);background:rgba(247,178,62,.22)}
 th.bdgh{min-width:46px;text-align:center;vertical-align:bottom;padding:0 0 8px;font-size:15px}
 td.bdg{width:46px;text-align:center;cursor:pointer}
 .bpill{display:inline-block;min-width:26px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);border:1px solid var(--line);border-radius:7px;padding:3px 6px;transition:.1s}
+td.bdg.spk{cursor:default}
+td.bdg.spk.has .bpill{color:var(--armed);border-color:var(--armed-dim)}
 td.bdg.snd.has .bpill{color:var(--warn);border-color:var(--warn-dim)}
 td.bdg.vid.has .bpill{color:var(--cool);border-color:var(--cool-dim)}
 td.bdg:hover .bpill{border-color:var(--txt-2)}
