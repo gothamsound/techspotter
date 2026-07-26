@@ -1,0 +1,280 @@
+// App wiring: ingest, state, actions, the add/rename bar, view toggles,
+// text-size stepper. All state lives in memory; localStorage holds UI
+// prefs only (text size), never script text.
+
+import { parseShow, ParseError } from '../parser/parse.js';
+import {
+  addCharacter,
+  promoteReject,
+  dismissReject,
+  toggleSpeaker,
+  renameCharacter,
+  deleteCharacter,
+  mergeCharacters,
+  dismissOffer,
+  textSearchScenes,
+} from '../parser/edits.js';
+import { extractRunsFromBytes } from './pdftext.js';
+import { render } from './render.js';
+
+const $ = (id) => document.getElementById(id);
+
+const state = {
+  parsed: null,
+  search: '',
+  view: { chars: true },
+  // bar: {mode:'add', name, ids:Set, dirty} | {mode:'rename', target, name}
+  bar: null,
+  armed: null, // two-tap tracking {kind, key, timer}
+};
+
+function rerender() {
+  render(state, act);
+  syncBar();
+}
+
+function disarm() {
+  if (state.armed) {
+    clearTimeout(state.armed.timer);
+    state.armed = null;
+  }
+}
+
+// Delete and merge are the expensive mistakes: first tap arms (red),
+// second tap within 3.5 s commits, anything else disarms.
+function twoTap(kind, key, commit) {
+  if (state.armed?.kind === kind && state.armed.key === key) {
+    disarm();
+    commit();
+  } else {
+    disarm();
+    state.armed = {
+      kind,
+      key,
+      timer: setTimeout(() => {
+        state.armed = null;
+        rerender();
+      }, 3500),
+    };
+  }
+  rerender();
+}
+
+const act = {
+  toggleCell(sceneId, name) {
+    disarm();
+    toggleSpeaker(state.parsed, sceneId, name);
+    rerender();
+  },
+  togglePending(sceneId) {
+    const bar = state.bar;
+    if (!bar || bar.mode !== 'add') return;
+    bar.dirty = true;
+    if (bar.ids.has(sceneId)) bar.ids.delete(sceneId);
+    else bar.ids.add(sceneId);
+    rerender();
+  },
+  promote(name) {
+    disarm();
+    promoteReject(state.parsed, name);
+    rerender();
+  },
+  dismissReject(name, reason) {
+    disarm();
+    dismissReject(state.parsed, name, reason);
+    rerender();
+  },
+  merge(variant, canonical) {
+    twoTap('merge', `${variant}→${canonical}`, () =>
+      mergeCharacters(state.parsed, variant, canonical),
+    );
+  },
+  dismissOffer(variant, canonical) {
+    disarm();
+    dismissOffer(state.parsed, variant, canonical);
+    rerender();
+  },
+  deleteChar(name) {
+    twoTap('delchar', name, () => deleteCharacter(state.parsed, name));
+  },
+  startRename(name) {
+    disarm();
+    state.bar = { mode: 'rename', target: name, name };
+    rerender();
+    $('abName').value = name;
+    $('abName').focus();
+    $('abName').select();
+  },
+};
+
+/* ---- add / rename bar ---- */
+
+function openAddBar() {
+  disarm();
+  state.bar = { mode: 'add', name: '', ids: new Set(), dirty: false };
+  rerender();
+  $('abName').value = '';
+  $('abName').focus();
+}
+
+function closeBar() {
+  state.bar = null;
+  $('abErr').textContent = '';
+  rerender();
+}
+
+function syncBar() {
+  const bar = state.bar;
+  $('addBar').hidden = !bar;
+  if (!bar) return;
+  $('abIcon').textContent = bar.mode === 'add' ? '+' : '✎';
+  $('abHint').textContent =
+    bar.mode === 'add'
+      ? 'scenes auto-mark by text search — tap cells in the amber column to adjust, then Save'
+      : `renaming ${bar.target} — Enter saves, Esc cancels`;
+  $('abSave').textContent = bar.mode === 'add' ? 'Save character' : 'Rename';
+  $('abSave').disabled = !bar.name.trim();
+}
+
+function saveBar() {
+  const bar = state.bar;
+  if (!bar || !bar.name.trim()) return;
+  const name = bar.name.trim().toUpperCase();
+  try {
+    if (bar.mode === 'add') {
+      if (state.parsed.characters.some((c) => c.name === name)) {
+        throw new Error(`${name} is already a column.`);
+      }
+      addCharacter(state.parsed, name, [...bar.ids]);
+    } else {
+      renameCharacter(state.parsed, bar.target, name);
+    }
+    closeBar();
+  } catch (e) {
+    $('abErr').textContent = e.message;
+  }
+}
+
+$('addCharBtn').onclick = () => (state.bar?.mode === 'add' ? closeBar() : openAddBar());
+$('abSave').onclick = saveBar;
+$('abCancel').onclick = closeBar;
+$('abName').addEventListener('input', () => {
+  const bar = state.bar;
+  if (!bar) return;
+  bar.name = $('abName').value.toUpperCase();
+  $('abErr').textContent = '';
+  if (bar.mode === 'add' && !bar.dirty) {
+    bar.ids = new Set(
+      bar.name.trim() ? textSearchScenes(state.parsed, bar.name) : [],
+    );
+  }
+  rerender();
+});
+$('abName').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveBar();
+  if (e.key === 'Escape') closeBar();
+});
+
+/* ---- search + view toggles ---- */
+
+$('search').addEventListener('input', () => {
+  state.search = $('search').value;
+  rerender();
+});
+$('vChars').addEventListener('change', () => {
+  state.view.chars = $('vChars').checked;
+  rerender();
+});
+
+/* ---- ingest ---- */
+
+function setBar(frac) {
+  $('dzBar').style.width = `${Math.round(frac * 100)}%`;
+}
+
+async function loadPdf(bytes, label) {
+  $('errBar').hidden = true;
+  const dz = $('dropzone');
+  dz.classList.add('busy');
+  $('dzProgress').hidden = false;
+  setBar(0);
+  try {
+    const pages = await extractRunsFromBytes(bytes, (p, n) => setBar(p / n));
+    const parsed = parseShow(pages);
+    state.parsed = parsed;
+    state.bar = null;
+    state.search = '';
+    $('search').value = '';
+    $('dzTitle').textContent = `Loaded: ${label} — ${pages.length} page${pages.length === 1 ? '' : 's'}, ${parsed.scenes.length} scenes`;
+    rerender();
+  } catch (e) {
+    const msg =
+      e instanceof ParseError ? e.message : `Could not read this PDF. ${e.message || e}`;
+    $('errBar').textContent = msg;
+    $('errBar').hidden = false;
+  } finally {
+    dz.classList.remove('busy');
+    $('dzProgress').hidden = true;
+  }
+}
+
+async function loadFile(file) {
+  if (!file) return;
+  if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+    $('errBar').textContent = `${file.name} is not a PDF. Drop the screenplay PDF here.`;
+    $('errBar').hidden = false;
+    return;
+  }
+  loadPdf(new Uint8Array(await file.arrayBuffer()), file.name);
+}
+
+const dz = $('dropzone');
+dz.addEventListener('click', () => $('fileInput').click());
+$('ingestBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  $('fileInput').click();
+});
+$('fileInput').addEventListener('change', () => {
+  loadFile($('fileInput').files[0]);
+  $('fileInput').value = '';
+});
+dz.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dz.classList.add('over');
+});
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dz.classList.remove('over');
+  loadFile(e.dataTransfer.files[0]);
+});
+
+/* ---- text-size stepper (localStorage: UI pref only) ---- */
+
+const FS_STEPS = [0.85, 1, 1.15, 1.3, 1.5];
+let fsIdx = Number(localStorage.getItem('ts-fs-idx') ?? 1);
+if (!(fsIdx >= 0 && fsIdx < FS_STEPS.length)) fsIdx = 1;
+
+function applyFs() {
+  document.documentElement.style.setProperty('--fs-scale', FS_STEPS[fsIdx]);
+  $('fsPct').textContent = `${Math.round(FS_STEPS[fsIdx] * 100)}%`;
+  localStorage.setItem('ts-fs-idx', String(fsIdx));
+}
+$('fsMinus').onclick = () => {
+  fsIdx = Math.max(0, fsIdx - 1);
+  applyFs();
+};
+$('fsPlus').onclick = () => {
+  fsIdx = Math.min(FS_STEPS.length - 1, fsIdx + 1);
+  applyFs();
+};
+applyFs();
+
+/* ---- synthetic demo (#demo): the full real pipeline over a generated
+   PDF — no screenplay text anywhere near this ---- */
+
+if (location.hash === '#demo') {
+  const { demoPdf } = await import('./demo.js');
+  $('demoBadge').hidden = false;
+  loadPdf(demoPdf(), 'synthetic demo');
+}

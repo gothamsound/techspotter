@@ -1,0 +1,175 @@
+/* TechSpotter — booth-instrument aesthetic, shared visual language with
+   Sceneline (its /shared/styles.css is the reference). Fonts are bundled
+   locally in assets/fonts.css: zero network requests after page load. */
+:root{
+  --bg:#0d1419;--panel:#141d24;--raised:#1b262e;--raised-2:#22303a;
+  --line:#293742;--line-soft:#1f2c34;
+  --txt:#e9eef2;--txt-2:#90a2ad;--txt-3:#5d6e79;
+  --armed:#34c98d;--armed-dim:#1c5f48;--live:#ff4636;--warn:#f7b23e;--warn-dim:#5a4520;--cool:#56b9d8;--cool-dim:#2a4a55;
+  --radius:10px;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --disp:'Barlow Semi Condensed',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+
+  /* type scale: every size derives from these rungs; --fs-scale is the one
+     knob (far-booth bigger, tablet smaller), persisted per client. */
+  --fs-scale:1;
+  --fs-tag:   calc(10px * var(--fs-scale));
+  --fs-meta:  calc(12px * var(--fs-scale));
+  --fs-label: calc(13px * var(--fs-scale));
+  --fs-ui:    calc(14px * var(--fs-scale));
+  --fs-body:  calc(16px * var(--fs-scale));
+  --fs-title: calc(23px * var(--fs-scale));
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);-webkit-font-smoothing:antialiased;font-size:var(--fs-body);line-height:1.45}
+.app{display:flex;flex-direction:column;min-height:100vh}
+button{font-family:inherit}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:center;gap:18px;padding:12px 20px;
+  background:linear-gradient(180deg,#16212a,#111a21);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:9px}
+.brand b{font-family:var(--disp);font-weight:700;font-size:var(--fs-title);letter-spacing:.14em;text-transform:uppercase}
+.brand .tm{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-3);border:1px solid var(--line);border-radius:4px;padding:2px 5px;letter-spacing:.08em}
+.brand .tm.demo{color:var(--warn);border-color:var(--warn)}
+.brand .maker{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-3);letter-spacing:.05em;margin-left:3px}
+.brand .maker b{font-family:var(--disp);font-weight:700;font-size:var(--fs-label);color:var(--cool);letter-spacing:.11em;text-transform:uppercase}
+.spacer{flex:1}
+/* local badge: TechSpotter's answer to Sceneline's connection dot — there
+   is no connection, and that is the product promise */
+.conn{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2)}
+.conn .dot{width:9px;height:9px;border-radius:50%;background:var(--armed);box-shadow:0 0 8px rgba(52,201,141,.5)}
+.fs-ctl{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:var(--bg);overflow:hidden}
+.fs-ctl button{font-family:var(--disp);font-weight:600;color:var(--txt-2);background:none;border:none;cursor:pointer;letter-spacing:.04em;font-size:var(--fs-ui);padding:6px 10px}
+.fs-ctl .fs-pct{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-3);min-width:44px;text-align:center;padding:6px 4px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.fs-ctl button:hover{color:var(--txt);background:var(--raised-2)}
+.fs-ctl button:focus-visible{outline:2px solid var(--cool);outline-offset:-2px}
+
+/* ---- screen ---- */
+.screen{flex:1;padding:18px 20px 22px}
+
+/* ---- ingest dropzone ---- */
+.ingest{border:1px dashed var(--line);border-radius:10px;padding:18px;
+  display:flex;align-items:center;gap:14px;background:var(--bg);transition:.13s;cursor:pointer}
+.ingest:hover{border-color:var(--cool)}
+.ingest.over{border-color:var(--armed);border-style:solid;background:rgba(52,201,141,.06);box-shadow:0 0 0 1px var(--armed) inset}
+.ingest.busy{opacity:.7;pointer-events:none}
+.ingest .ic{width:40px;height:40px;border-radius:9px;background:var(--raised-2);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.ingest .t{flex:1}
+.ingest .t b{font-family:var(--disp);font-weight:600;font-size:var(--fs-body)}
+.ingest .t span{display:block;font-size:var(--fs-label);color:var(--txt-2);margin-top:2px}
+.dz-progress{margin-top:10px;height:6px;width:100%;max-width:440px;background:var(--raised-2);border-radius:4px;overflow:hidden}
+.dz-progress[hidden]{display:none}
+.dz-bar{height:100%;width:0;background:var(--armed);border-radius:4px;transition:width .15s ease}
+.btn{font-family:var(--disp);font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:var(--fs-ui);
+  color:var(--txt);background:var(--raised-2);border:1px solid var(--line);padding:10px 16px;border-radius:8px;cursor:pointer;transition:.13s}
+.btn:hover{background:#2a3a45}
+.btn:focus-visible{outline:2px solid var(--cool);outline-offset:2px}
+.btn.primary{background:var(--armed);color:#062a1d;border-color:transparent}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.sm{padding:6px 11px;font-size:var(--fs-label)}
+.hide{display:none!important}
+
+/* ---- loud failure banner (doctrine: never an empty grid) ---- */
+.errbar{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding:12px 14px;
+  background:rgba(255,70,54,.08);border:1px solid var(--live);border-radius:10px;
+  font-family:var(--mono);font-size:var(--fs-label);color:var(--txt)}
+.errbar[hidden]{display:none}
+.errbar::before{content:'✕';color:var(--live);font-weight:700}
+
+/* ---- matrix tools ---- */
+.mx-tools{display:flex;align-items:center;gap:10px;margin:16px 0 13px;flex-wrap:wrap}
+.mx-tools[hidden]{display:none}
+.mx-tools .ttl{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:var(--fs-label);color:var(--txt-2)}
+.search{font-family:var(--mono);font-size:var(--fs-label);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 11px;color:var(--txt);width:200px}
+.search::placeholder{color:var(--txt-3)}
+/* per-layer view checkmarks (Peter): not everyone needs characters, sound
+   tech, and video tech at once */
+.viewkey{display:flex;gap:6px}
+.vk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2);
+  border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer;background:var(--bg);transition:.13s}
+.vk:hover{border-color:var(--cool-dim);color:var(--txt)}
+.vk input{accent-color:var(--armed);margin:0}
+.vk.off{opacity:.45;cursor:default}
+.vk.off:hover{border-color:var(--line);color:var(--txt-2)}
+.mx-export{display:flex;gap:8px}
+.rolekey{display:flex;gap:14px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2);margin-left:auto;flex-wrap:wrap}
+.rolekey i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* ---- add-character / rename bar ---- */
+.addbar{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:0 0 10px;background:var(--panel);border:1px dashed var(--warn);border-radius:10px;flex-wrap:wrap}
+.addbar[hidden]{display:none}
+.ab-plus{font-family:var(--mono);font-size:18px;color:var(--warn);line-height:1}
+.addname{background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:var(--fs-label);letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;min-width:220px}
+.addname:focus{outline:none;border-color:var(--warn)}
+.ab-hint{font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3)}
+.ab-err{font-family:var(--mono);font-size:var(--fs-meta);color:var(--live)}
+.ab-err:empty{display:none}
+
+/* ---- review rails (same chassis as Sceneline's castwarn family) ---- */
+.castwarn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 12px;margin:0 0 10px;background:rgba(247,178,62,.06);border:1px solid var(--warn-dim);border-radius:10px}
+.castwarn[hidden]{display:none}
+.cw-i{color:var(--warn)}
+.cw-t{font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2)}
+.cw-chip{font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.04em;color:var(--warn);background:transparent;border:1px dashed var(--warn);border-radius:8px;padding:6px 10px;cursor:pointer}
+.cw-chip i{font-style:normal;color:var(--txt-3);margin-left:6px}
+.cw-chip:hover{background:rgba(247,178,62,.14)}
+.rj-pair{display:inline-flex;align-items:center;gap:2px}
+.cw-x{font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);background:transparent;border:1px solid var(--line);border-radius:7px;padding:6px 8px;cursor:pointer}
+.cw-x:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+/* reject scanner: cyan = reviewable parser artifact, not a warning */
+.castwarn.rej{background:rgba(86,185,216,.05);border-color:rgba(86,185,216,.35)}
+.castwarn.rej .cw-i{color:var(--cool)}
+.castwarn.rej .cw-chip{color:var(--cool);border-color:var(--cool)}
+.castwarn.rej .cw-chip:hover{background:rgba(86,185,216,.14)}
+/* merge rail: the ↔ commit is two-tap and arms live-red like delete — a
+   wrong merge drops a distinct performer */
+.castwarn.mrg{background:rgba(86,185,216,.05);border-color:rgba(86,185,216,.35)}
+.castwarn.mrg .cw-i{color:var(--cool)}
+.castwarn.mrg .mrg-chip{color:var(--txt-2);border-style:solid;cursor:default;border-color:var(--cool)}
+.castwarn.mrg .mrg-chip b{color:var(--cool);margin:0 2px;font-weight:500}
+.cw-x.mrgok:hover{color:var(--cool);border-color:var(--cool)}
+.cw-x.mrgok.armed,.cw-x.armed{color:var(--live);border-color:var(--live);background:rgba(255,70,54,.12)}
+
+/* ---- matrix ---- */
+.mx-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);max-height:68vh;background:var(--panel)}
+.mx-wrap[hidden]{display:none}
+table.mx{border-collapse:separate;border-spacing:0;font-size:var(--fs-label);width:max-content}
+table.mx th,table.mx td{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);white-space:nowrap}
+table.mx thead th{position:sticky;top:0;z-index:3;background:var(--raised);
+  font-family:var(--disp);font-weight:600;letter-spacing:.03em;color:var(--txt-2);padding:0;height:132px;vertical-align:bottom}
+/* rotated header at width:0 so long names can't bloat the 34px column;
+   the th itself is the rename click target (the label's box is 0-wide) */
+th.chh{cursor:pointer}
+table.mx thead th .rot{display:inline-block;width:0;overflow:visible;transform:rotate(-90deg) translate(24px,18px);transform-origin:left bottom;white-space:nowrap;padding:8px 0;font-size:var(--fs-label);color:var(--cool);pointer-events:none}
+th.chh:hover .rot{color:var(--txt)}
+th.scnh{left:0;z-index:5;min-width:290px;text-align:left;padding:10px 12px;height:auto;vertical-align:middle;background:var(--raised)}
+td.scn{position:sticky;left:0;z-index:2;background:var(--panel);text-align:left;padding:7px 12px;min-width:290px}
+td.scn .s{font-family:var(--mono);font-size:var(--fs-label);color:var(--txt);font-weight:500}
+td.scn .sl{font-size:var(--fs-meta);color:var(--txt-3);overflow:hidden;text-overflow:ellipsis;max-width:330px}
+tr:hover td,tr:hover td.scn{background:var(--raised)}
+td.cell{width:34px;height:34px;text-align:center;cursor:pointer}
+td.cell .d{display:inline-block;width:15px;height:15px;border-radius:4px;background:transparent;border:1px solid var(--line);transition:.1s}
+td.cell.on .d{background:var(--armed);border-color:transparent;box-shadow:0 0 8px rgba(52,201,141,.3)}
+td.cell:hover .d{border-color:var(--cool)}
+tr.dim td.cell{opacity:.25}
+tr.dim td.scn{opacity:.45}
+
+/* pending add-column: amber = not locked in yet */
+th.pend-h .rot{color:var(--warn)}
+td.cell.pend .d{border:1px dashed var(--warn);background:rgba(247,178,62,.07)}
+td.cell.pend.on .d{background:var(--warn);border-color:transparent;box-shadow:0 0 8px rgba(247,178,62,.35)}
+td.cell.pend:hover .d{border-color:var(--warn);background:rgba(247,178,62,.22)}
+
+/* two-tap remove × on character headers (delete is the expensive mistake) */
+.delx{position:absolute;left:50%;transform:translateX(-50%);bottom:2px;width:20px;height:20px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--txt-3);font-size:12px;line-height:1;cursor:pointer;padding:0;z-index:6}
+.delx:hover{color:var(--live);border-color:var(--live)}
+.delx.armed{background:var(--live);border-color:transparent;color:#fff;box-shadow:0 0 8px rgba(255,70,54,.5)}
+
+.mx-foot{display:flex;gap:18px;padding:11px 4px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-2);flex-wrap:wrap}
+.mx-foot b{color:var(--txt)}
+
+.foot{padding:10px 20px 26px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);text-align:center;letter-spacing:.03em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}

@@ -8,8 +8,13 @@ spotting layers: Sound (playback, phone calls, sound reactions) and Video
 device.** After page load the site makes zero network requests: no CDNs, no
 analytics, no telemetry.
 
-Status: in build. The placeholder is live at
-https://gothamsound.github.io/techspotter/
+Live at https://gothamsound.github.io/techspotter/ — drop a PDF, review the
+matrix, correct the parser with clicks. A fully synthetic demo show (generated
+in your browser, no script text anywhere) is at
+https://gothamsound.github.io/techspotter/#demo
+
+In build: department spotting layers (Sound / Video), then exports
+(.sceneline v2, CSV/XLSX, print).
 
 ## Development
 

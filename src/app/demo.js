@@ -1,0 +1,83 @@
+// Synthetic demo show: generated in the browser by the same fixture DSL
+// the tests use, then run through the real pdf.js + parser pipeline. It
+// exercises every review surface: gate rejects (charset, stop-word,
+// dual-dialogue), a watermark letter, a surname merge offer, and variant
+// characters. Entirely fictional; no screenplay text exists here.
+
+import { Screenplay } from '../../test/fixtures/screenplay.js';
+
+export function demoPdf() {
+  const sp = new Screenplay();
+  sp.page()
+    .header('"MYSHOW" - Ep. 101', 108)
+    .header('12.')
+    .slugNumbered('12', 'INT. EVIDENCE LAB - NIGHT')
+    .blank()
+    .action('Victor stares at the tox screen. A KNOCK at the door.')
+    .blank()
+    .cue('VICTOR')
+    .dialogue('Run it again.')
+    .blank()
+    .cue('DANA')
+    .dialogue('Twice was enough.')
+    .cue('S')
+    .dialogue('Third time pays for all.')
+    .blank()
+    .slugNumbered('13', 'EXT. PARKING GARAGE - NIGHT')
+    .blank()
+    .cue('MERC #1')
+    .dialogue('Move! Move!')
+    .blank()
+    .cue('MAN IN BLACK')
+    .dialogue('You were told not to come.')
+    .blank()
+    .cue('VICTOR')
+    .dialogue('And yet.');
+  sp.page()
+    .header('"MYSHOW" - Ep. 101', 108)
+    .header('13.')
+    .slugNumbered('14', 'INT. HR OFFICE - DAY')
+    .blank()
+    .cue('ELEANOR FROM HR')
+    .dialogue('Sign here, please.')
+    .blank()
+    .cue('VICTOR')
+    .dialogue('Fine.')
+    .cue('S')
+    .dialogue('Initial the second page too.')
+    .blank()
+    .slugNumbered('22A', 'INT. KARAOKE BAR - NIGHT')
+    .blank()
+    .cue('VALERIE')
+    .paren('(singing)')
+    .dialogue('Happy birthday to you...')
+    .blank()
+    .dualCue('LOLA', 'DENNY')
+    .dialogue('What?')
+    .blank()
+    .cue('DANA')
+    .dialogue('Cut the feed.');
+  sp.page()
+    .header('"MYSHOW" - Ep. 101', 108)
+    .header('14.')
+    .slugNumbered('23', 'INT. APARTMENT - FLASHBACK - DAY')
+    .blank()
+    .cue('YOUNG VALERIE')
+    .dialogue('Wait for me!')
+    .blank()
+    .cue('VICTOR HALE')
+    .dialogue('It ends now.')
+    .blank()
+    .slugNumbered('24', 'EXT. RIVERBANK - DAWN')
+    .blank()
+    .action('A search line combs the reeds.')
+    .blank()
+    .cue('VICTOR')
+    .dialogue('Over here.')
+    .blank()
+    .cue('VALERIE')
+    .dialogue('I promise.')
+    .blank()
+    .transition('CUT TO:');
+  return sp.build();
+}

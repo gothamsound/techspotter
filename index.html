@@ -4,48 +4,73 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TechSpotter</title>
-<style>
-  :root {
-    color-scheme: dark;
-  }
-  * { margin: 0; box-sizing: border-box; }
-  body {
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 2rem 1.25rem;
-    background: #10141a;
-    color: #e6e9ee;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    text-align: center;
-  }
-  h1 {
-    font-size: clamp(2.2rem, 6vw, 3.4rem);
-    font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-  h1 span { color: #4fc08d; }
-  .coming {
-    max-width: 34rem;
-    font-size: 1.05rem;
-    line-height: 1.5;
-    color: #aab3bf;
-  }
-  footer {
-    margin-top: 2.5rem;
-    font-size: 0.85rem;
-    color: #78828f;
-  }
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d1419'/%3E%3Crect x='18' y='18' width='28' height='28' rx='7' fill='%2334c98d'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-  <main>
-    <h1>Tech<span>Spotter</span></h1>
-    <p class="coming">Drop a screenplay PDF, get the scene-by-character matrix plus Sound and Video department spotting. In build now.</p>
-  </main>
-  <footer>TechSpotter &mdash; all processing happens in your browser. Your script never leaves your device.</footer>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><b>TechSpotter</b><span class="tm">prep bench</span><span class="maker">by <b>Gotham&nbsp;Sound</b></span><span class="tm demo" id="demoBadge" hidden>synthetic demo</span></div>
+    <div class="spacer"></div>
+    <div class="fs-ctl"><button class="fs-b" id="fsMinus" title="Smaller text">A−</button><span class="fs-pct" id="fsPct">100%</span><button class="fs-b" id="fsPlus" title="Bigger text">A+</button></div>
+    <div class="conn" title="Zero network requests after page load. The PDF is read in this tab and never uploaded."><span class="dot"></span><span>100% local</span></div>
+  </div>
+
+  <section class="screen">
+    <div class="ingest" id="dropzone">
+      <div class="ic">⬍</div>
+      <div class="t">
+        <b id="dzTitle">Drag a script PDF here</b>
+        <span id="dzSub">…or choose a file. Parsing happens in this tab; the script never leaves your device. (.sceneline import arrives with exports.)</span>
+        <div class="dz-progress" id="dzProgress" hidden><div class="dz-bar" id="dzBar"></div></div>
+      </div>
+      <button class="btn primary" id="ingestBtn">Choose file…</button>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" class="hide">
+    </div>
+
+    <div class="errbar" id="errBar" hidden></div>
+
+    <div class="mx-tools" id="tools" hidden>
+      <span class="ttl">Matrix</span>
+      <input class="search" id="search" placeholder="Find character / scene…">
+      <button class="btn" id="addCharBtn" title="Add a character the parser missed — type the name, scenes auto-mark by text search, adjust, Save">+ Character</button>
+      <div class="viewkey">
+        <label class="vk"><input type="checkbox" id="vChars" checked>characters</label>
+        <label class="vk off" title="Sound spotting layer arrives with M3"><input type="checkbox" disabled>🔊 sound</label>
+        <label class="vk off" title="Video spotting layer arrives with M3"><input type="checkbox" disabled>🎬 video</label>
+      </div>
+      <div class="mx-export">
+        <button class="btn" disabled title="Exports arrive with M4">Export .sceneline</button>
+        <button class="btn" disabled title="Exports arrive with M4">Export grid</button>
+        <button class="btn" disabled title="Print arrives with M4">Print / PDF</button>
+      </div>
+      <div class="rolekey">
+        <span><i style="background:var(--armed)"></i>speaks in scene</span>
+        <span>click a cell to toggle · click a name to rename</span>
+      </div>
+    </div>
+
+    <div class="addbar" id="addBar" hidden>
+      <span class="ab-plus" id="abIcon">+</span>
+      <input class="addname" id="abName" placeholder="CHARACTER NAME" maxlength="40" autocomplete="off" spellcheck="false">
+      <span class="ab-hint" id="abHint">scenes auto-mark by text search — tap cells in the amber column to adjust, then Save</span>
+      <span class="ab-err" id="abErr"></span>
+      <button class="btn primary" id="abSave" disabled>Save character</button>
+      <button class="btn" id="abCancel">Cancel</button>
+    </div>
+
+    <div class="castwarn rej" id="rejRail" hidden></div>
+    <div class="castwarn mrg" id="mergeRail" hidden></div>
+
+    <div class="mx-wrap" id="mxWrap" hidden>
+      <table class="mx" id="mx"></table>
+    </div>
+    <div class="mx-foot" id="foot"></div>
+  </section>
+
+  <div class="foot">TechSpotter &mdash; all processing happens in your browser. Your script never leaves your device.</div>
+</div>
+<script type="module" src="src/app/main.js"></script>
 </body>
 </html>
