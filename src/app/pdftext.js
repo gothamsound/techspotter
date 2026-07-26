@@ -9,7 +9,9 @@ GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-export async function extractRunsFromBytes(bytes, onProgress) {
+// Returns the extracted runs AND the live document handle: the doc stays
+// open for the session so source peek can render page regions on demand.
+export async function openAndExtract(bytes, onProgress) {
   const doc = await getDocument({
     data: bytes,
     useSystemFonts: true,
@@ -21,6 +23,5 @@ export async function extractRunsFromBytes(bytes, onProgress) {
     pages.push(normalizePage(await page.getTextContent()));
     onProgress?.(p, doc.numPages);
   }
-  await doc.destroy();
-  return pages;
+  return { doc, pages };
 }

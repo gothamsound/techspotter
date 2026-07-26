@@ -197,4 +197,13 @@ tr.mrow td{background:var(--raised);padding:10px 14px}
 .mx-foot b{color:var(--txt)}
 
 .foot{padding:10px 20px 26px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);text-align:center;letter-spacing:.03em}
+
+/* ---- source peek: hover any anchored artifact, see the real page ---- */
+.peek{position:fixed;z-index:50;max-width:600px;background:var(--panel);
+  border:1px solid var(--cool);border-radius:10px;padding:6px;
+  box-shadow:0 10px 34px rgba(0,0,0,.55);pointer-events:none}
+.peek[hidden]{display:none}
+.peek img{display:block;max-width:100%;border-radius:6px;background:#fff}
+.peek img:not([src]){display:none}
+.pk-cap{font-family:var(--mono);font-size:var(--fs-tag);color:var(--txt-2);padding:5px 4px 2px;letter-spacing:.04em}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}

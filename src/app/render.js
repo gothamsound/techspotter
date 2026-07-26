@@ -81,6 +81,12 @@ function renderRejRail(state, act, rail) {
     chip.append(note);
     chip.title = `Add ${r.name} to the matrix (scenes mark from its occurrences plus text search)`;
     chip.onclick = () => act.promote(r.name);
+    const first = r.occurrences[0];
+    if (first?.anchor) {
+      chip.onmouseenter = (e) =>
+        act.peekShow(e, first.anchor, `${r.name} · scene ${first.scene} · pg ${first.page}`);
+      chip.onmouseleave = () => act.peekHide();
+    }
     const x = el('button', 'cw-x');
     x.textContent = '×';
     x.title = 'Dismiss — this line is junk';
@@ -269,6 +275,11 @@ function momentRow(state, act, scene, [layer, icon, cls], colspan) {
       : 'Dismiss: stays in the file as dismissed, drops from counts';
     x.onclick = () => act.dismissMoment(m);
     card.append(cat, snip, meta, x);
+    if (m.anchor) {
+      card.onmouseenter = (e) =>
+        act.peekShow(e, m.anchor, `${m.category} · scene ${m.scene} · pg ${m.page}`);
+      card.onmouseleave = () => act.peekHide();
+    }
     td.append(card);
   }
   tr.append(td);

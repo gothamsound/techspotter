@@ -14,8 +14,9 @@ import {
   dismissOffer,
   textSearchScenes,
 } from '../parser/edits.js';
-import { extractRunsFromBytes } from './pdftext.js';
+import { openAndExtract } from './pdftext.js';
 import { spotShow } from '../spot/index.js';
+import { renderPeek } from './peek.js';
 import { render } from './render.js';
 
 const $ = (id) => document.getElementById(id);
@@ -23,6 +24,7 @@ const $ = (id) => document.getElementById(id);
 const state = {
   parsed: null,
   spot: null,
+  pdfDoc: null,
   search: '',
   view: { chars: true, sound: true, video: true },
   // bar: {mode:'add', name, ids:Set, dirty} | {mode:'rename', target, name}
@@ -128,7 +130,42 @@ const act = {
     moment.dismissed = !moment.dismissed;
     rerender();
   },
+  async peekShow(evt, anchor, caption) {
+    if (!state.pdfDoc || !anchor) return;
+    const pk = $('peek');
+    const token = (pk.dataset.token = String(Math.random()));
+    $('peekCap').textContent = `${caption} — rendering…`;
+    $('peekImg').removeAttribute('src');
+    pk.hidden = false;
+    positionPeek(pk, evt);
+    try {
+      const url = await renderPeek(state.pdfDoc, anchor);
+      if (pk.dataset.token !== token || pk.hidden) return;
+      $('peekImg').src = url;
+      $('peekCap').textContent = caption;
+      positionPeek(pk, evt);
+    } catch {
+      if (pk.dataset.token === token) {
+        $('peekCap').textContent = `${caption} — could not render this region`;
+      }
+    }
+  },
+  peekHide() {
+    $('peek').hidden = true;
+  },
 };
+
+function positionPeek(pk, evt) {
+  const pad = 16;
+  const w = pk.offsetWidth || 480;
+  const h = pk.offsetHeight || 160;
+  let x = evt.clientX + pad;
+  let y = evt.clientY + pad;
+  if (x + w > window.innerWidth - pad) x = Math.max(pad, evt.clientX - w - pad);
+  if (y + h > window.innerHeight - pad) y = Math.max(pad, evt.clientY - h - pad);
+  pk.style.left = `${x}px`;
+  pk.style.top = `${y}px`;
+}
 
 /* ---- add / rename bar ---- */
 
@@ -228,9 +265,13 @@ async function loadPdf(bytes, label) {
   dz.classList.add('busy');
   $('dzProgress').hidden = false;
   setBar(0);
+  let doc = null;
   try {
-    const pages = await extractRunsFromBytes(bytes, (p, n) => setBar(p / n));
+    let pages;
+    ({ doc, pages } = await openAndExtract(bytes, (p, n) => setBar(p / n)));
     const parsed = parseShow(pages);
+    await state.pdfDoc?.destroy();
+    state.pdfDoc = doc;
     state.parsed = parsed;
     state.spot = spotShow(parsed, { sourceDoc: label });
     state.openMoments = null;
@@ -240,6 +281,7 @@ async function loadPdf(bytes, label) {
     $('dzTitle').textContent = `Loaded: ${label} — ${pages.length} page${pages.length === 1 ? '' : 's'}, ${parsed.scenes.length} scenes`;
     rerender();
   } catch (e) {
+    if (doc && doc !== state.pdfDoc) await doc.destroy().catch(() => {});
     const msg =
       e instanceof ParseError ? e.message : `Could not read this PDF. ${e.message || e}`;
     $('errBar').textContent = msg;

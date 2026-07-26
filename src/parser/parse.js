@@ -154,7 +154,14 @@ export function parseShow(pages) {
             occurrences: [],
           });
         }
-        rejectMap.get(key).occurrences.push({ scene: id, page: line.page });
+        rejectMap.get(key).occurrences.push({
+          scene: id,
+          page: line.page,
+          anchor: {
+            page: line.sheet,
+            bbox: [line.minX, line.y - 3, line.maxX, line.y + 9],
+          },
+        });
         record(line, 'rejected-cue');
         continue;
       }

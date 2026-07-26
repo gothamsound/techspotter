@@ -67,6 +67,15 @@ test('gate rejects surface with reasons; matrix stays clean', async () => {
   assert.equal(byName['GIRLS/CASSIDY'].reason, "charset '/'");
   assert.equal(byName['LOLA  DENNY'].reason, 'wide (dual dialogue?)');
 
+  // every occurrence carries a source-peek anchor (page sheet + bbox)
+  for (const r of parsed.rejects) {
+    for (const occ of r.occurrences) {
+      assert.equal(occ.anchor.page, 1);
+      const [x0, y0, x1, y1] = occ.anchor.bbox;
+      assert.ok(x0 < x1 && y0 < y1);
+    }
+  }
+
   assert.ok(!('EPISODE 101' in byName));
   assert.ok(!parsed.characters.some((c) => c.name === 'EPISODE 101'));
 });
