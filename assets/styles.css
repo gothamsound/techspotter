@@ -50,6 +50,26 @@ button{font-family:inherit}
 /* ---- screen ---- */
 .screen{flex:1;padding:18px 20px 22px}
 
+/* ---- introductory panel: shown until a show loads ---- */
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:34px 38px 28px;margin:6px 0 18px}
+.intro[hidden]{display:none}
+.intro h1{font-family:var(--disp);font-weight:700;font-size:calc(34px * var(--fs-scale));
+  letter-spacing:.02em;margin:0 0 10px}
+.in-sub{font-size:var(--fs-body);color:var(--txt-2);max-width:62ch;margin:0 0 22px;line-height:1.55}
+.in-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:0 0 22px}
+.in-feat{background:var(--bg);border:1px solid var(--line-soft);border-radius:10px;
+  padding:14px 16px;font-size:var(--fs-label);color:var(--txt-2);line-height:1.55}
+.in-feat b{display:block;color:var(--txt);font-family:var(--disp);font-weight:600;
+  letter-spacing:.03em;font-size:var(--fs-ui);margin-bottom:4px}
+.if-i{float:right;font-size:20px;margin-left:8px}
+.in-feat .mono{font-family:var(--mono);font-size:.92em;color:var(--cool)}
+.in-privacy{border:1px solid var(--armed);border-radius:10px;background:rgba(52,201,141,.07);
+  padding:16px 18px;margin:0 0 20px;box-shadow:0 0 18px rgba(52,201,141,.12)}
+.in-privacy b{display:block;font-family:var(--disp);font-weight:700;color:var(--armed);
+  letter-spacing:.06em;font-size:calc(17px * var(--fs-scale));margin-bottom:6px}
+.in-privacy span{font-family:var(--mono);font-size:var(--fs-label);color:var(--txt-2);line-height:1.6}
+
 /* ---- ingest dropzone ---- */
 .ingest{border:1px dashed var(--line);border-radius:10px;padding:18px;
   display:flex;align-items:center;gap:14px;background:var(--bg);transition:.13s;cursor:pointer}
@@ -225,7 +245,7 @@ tr.mrow td{background:var(--raised);padding:10px 14px}
   @page{size:11in 8.5in;margin:8mm}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:var(--bg)}
-  .topbar,.ingest,.mx-tools,.addbar,.castwarn,.errbar,.foot,.peek,.delx{display:none!important}
+  .topbar,.intro,.ingest,.mx-tools,.addbar,.castwarn,.errbar,.foot,.peek,.delx{display:none!important}
   tr.mrow{display:none!important}
   .screen{padding:0}
   .mx-wrap{overflow:visible;max-height:none;border:none;border-radius:0}

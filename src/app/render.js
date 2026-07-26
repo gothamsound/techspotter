@@ -17,6 +17,7 @@ import { textChannelNames } from '../parser/characters.js';
 
 export function render(state, act) {
   const p = state.parsed;
+  document.getElementById('intro').hidden = !!p;
   document.getElementById('tools').hidden = !p;
   document.getElementById('mxWrap').hidden = !p;
   if (!p) return;

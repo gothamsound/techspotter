@@ -435,8 +435,10 @@ applyFs();
 /* ---- synthetic demo (#demo): the full real pipeline over a generated
    PDF — no screenplay text anywhere near this ---- */
 
-if (location.hash === '#demo') {
+async function loadDemo() {
   const { demoPdf } = await import('./demo.js');
   $('demoBadge').hidden = false;
   loadPdf(demoPdf(), 'synthetic demo');
 }
+$('demoBtn').addEventListener('click', loadDemo);
+if (location.hash === '#demo') loadDemo();
