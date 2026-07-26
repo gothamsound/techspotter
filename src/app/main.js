@@ -134,10 +134,6 @@ const act = {
     moment.dismissed = !moment.dismissed;
     rerender();
   },
-  dismissBurnIn(entry) {
-    entry.dismissed = true;
-    rerender();
-  },
   async peekShow(evt, anchor, caption) {
     if (!state.pdfDoc || !anchor) return;
     const pk = $('peek');

@@ -21,39 +21,15 @@ export function render(state, act) {
   document.getElementById('mxWrap').hidden = !p;
   if (!p) return;
   renderRejRail(state, act, document.getElementById('rejRail'));
-  renderBurnRail(state, act, document.getElementById('burnRail'));
   renderTextRail(state, act, document.getElementById('textRail'));
   renderMergeRail(state, act, document.getElementById('mergeRail'));
   renderMatrix(state, act, document.getElementById('mx'));
   renderFoot(state, document.getElementById('foot'));
 }
 
-// Burn-in notice rail: stripped watermarks are surfaced, never silent.
-function renderBurnRail(state, act, rail) {
-  const entries = (state.parsed.burn_ins ?? []).filter((b) => !b.dismissed);
-  rail.hidden = !entries.length;
-  rail.textContent = '';
-  if (!entries.length) return;
-  rail.append(
-    sp('cw-i', '🧹'),
-    sp('cw-t', 'watermark / burn-in stripped from the text (never fed to gates, search, or detectors)'),
-  );
-  for (const b of entries) {
-    const pair = el('span', 'rj-pair');
-    const chip = el('span', 'cw-chip');
-    chip.style.cursor = 'default';
-    chip.textContent = `'${b.text}'`;
-    const note = el('i');
-    note.textContent = `×${b.pages} page${b.pages === 1 ? '' : 's'}`;
-    chip.append(note);
-    const x = el('button', 'cw-x');
-    x.textContent = '×';
-    x.title = 'Hide this notice (the strip record still rides the export)';
-    x.onclick = () => act.dismissBurnIn(b);
-    pair.append(chip, x);
-    rail.append(pair);
-  }
-}
+// (Burn-in strips are silent in the UI by Peter's call — housekeeping,
+// not an operator decision. The strip record still rides the export in
+// the x-techspotter block.)
 
 // Text-channel conversion rail (Peter's ruling, TechSpotter presentation):
 // X'S TEXT columns are probably video cues, not performers. Convert is a
