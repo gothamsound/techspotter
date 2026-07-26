@@ -69,6 +69,10 @@ button{font-family:inherit}
 .in-privacy b{display:block;font-family:var(--disp);font-weight:700;color:var(--armed);
   letter-spacing:.06em;font-size:calc(17px * var(--fs-scale));margin-bottom:6px}
 .in-privacy span{font-family:var(--mono);font-size:var(--fs-label);color:var(--txt-2);line-height:1.6}
+.in-origin{font-size:var(--fs-label);color:var(--txt-3);max-width:70ch;margin:18px 0 0;line-height:1.6}
+.in-origin b{color:var(--txt-2)}
+.in-origin a{color:var(--cool);text-decoration:none;border-bottom:1px solid var(--cool-dim)}
+.in-origin a:hover{color:var(--txt);border-bottom-color:var(--cool)}
 
 /* ---- ingest dropzone ---- */
 .ingest{border:1px dashed var(--line);border-radius:10px;padding:18px;
