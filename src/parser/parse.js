@@ -1,0 +1,173 @@
+// The core parser: normalized text runs (per page) in, structured show
+// out. Pure module, no DOM, no pdf.js. Failure is loud: zero scenes or a
+// missing text layer throws a ParseError the UI must surface plainly.
+
+import { BANDS, bandOf } from './constants.js';
+import { groupLines } from './lines.js';
+import { parseHeading } from './heading.js';
+import { evaluateCue } from './cues.js';
+import { deriveCharacters, findMergeOffers } from './characters.js';
+
+export class ParseError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.name = 'ParseError';
+    this.code = code;
+  }
+}
+
+export function parseShow(pages) {
+  if (!pages.length || pages.every((p) => !p.length)) {
+    throw new ParseError(
+      'no-text',
+      'No text layer found in this PDF. It may be a scan (image-only); TechSpotter needs a text PDF.',
+    );
+  }
+
+  const sheets = pages.map((runs, i) => {
+    const lines = groupLines(runs);
+    const headerLines = lines.filter((l) => l.y > BANDS.headerY);
+    const bodyLines = lines.filter((l) => l.y <= BANDS.headerY);
+    return {
+      sheet: i + 1,
+      headerLines,
+      bodyLines,
+      printedPage: printedPageFrom(headerLines),
+    };
+  });
+
+  const furniture = new Set();
+  for (const s of sheets) {
+    for (const l of s.headerLines) furniture.add(l.text.trim().toUpperCase());
+  }
+
+  const flat = [];
+  for (const s of sheets) {
+    for (const l of s.bodyLines) {
+      flat.push({ ...l, sheet: s.sheet, page: s.printedPage ?? s.sheet });
+    }
+  }
+
+  // Heading candidates live at the left margin (slugs) or carry margin
+  // scene numbers; dialogue-band text that quotes a slug is never one.
+  const headings = flat.map((l) =>
+    l.minX < BANDS.dialogue[0] ? parseHeading(l) : null,
+  );
+
+  // Pre-scan (brief §3.1): any numbered heading anywhere puts the whole
+  // document in numbered mode, where bare slugs are context, not
+  // boundaries. No numbered headings at all = bare-slug mode.
+  const mode = headings.some((h) => h?.num) ? 'numbered' : 'bare-slug';
+
+  const bounds = [];
+  flat.forEach((line, idx) => {
+    const h = headings[idx];
+    if (!h) return;
+    if (mode === 'numbered' && !h.num) return;
+    bounds.push({ idx, h, line });
+  });
+
+  if (!bounds.length) {
+    throw new ParseError(
+      'zero-scenes',
+      `No scenes found. TechSpotter looked for scene headings (INT. / EXT. slugs) across ${pages.length} page(s) and found none. Is this a screenplay PDF?`,
+    );
+  }
+
+  // Front matter (title page etc.) is furniture: any of its lines seen
+  // again in the cue band is never a character (brief §3.2).
+  for (let i = 0; i < bounds[0].idx; i++) {
+    furniture.add(flat[i].text.trim().toUpperCase());
+  }
+
+  const scenes = [];
+  const rejectMap = new Map();
+
+  bounds.forEach((bound, b) => {
+    const end = b + 1 < bounds.length ? bounds[b + 1].idx : flat.length;
+    const id = mode === 'numbered' ? bound.h.num : String(b + 1);
+    const scene = {
+      id,
+      heading: bound.h.heading,
+      page: bound.line.page,
+      characters_speaking: [],
+      action_text: '',
+      dialogue_by_character: {},
+      text: '',
+    };
+    const textLines = [bound.h.heading];
+    const actionLines = [];
+    let openSpeaker = null;
+
+    for (let i = bound.idx + 1; i < end; i++) {
+      const line = flat[i];
+      textLines.push(line.text);
+      const verdict = evaluateCue(line, flat[i + 1], { furniture });
+
+      if (verdict?.accept) {
+        openSpeaker = verdict.accept.name;
+        if (!scene.characters_speaking.includes(openSpeaker)) {
+          scene.characters_speaking.push(openSpeaker);
+        }
+        scene.dialogue_by_character[openSpeaker] ??= '';
+        continue;
+      }
+      if (verdict?.reject) {
+        // A rejected cue-shaped line (watermark debris etc.) must not
+        // steal the open dialogue block.
+        const r = verdict.reject;
+        const key = `${r.name}|${r.reason}`;
+        if (!rejectMap.has(key)) {
+          rejectMap.set(key, {
+            name: r.name,
+            code: r.code,
+            reason: r.reason,
+            occurrences: [],
+          });
+        }
+        rejectMap.get(key).occurrences.push({ scene: id, page: line.page });
+        continue;
+      }
+
+      const band = bandOf(line.minX);
+      if (band === 'dialogue' || band === 'paren') {
+        if (openSpeaker) {
+          scene.dialogue_by_character[openSpeaker] +=
+            (scene.dialogue_by_character[openSpeaker] ? '\n' : '') + line.text;
+        }
+        continue;
+      }
+      openSpeaker = null;
+      if (band === 'action') actionLines.push(line.text);
+    }
+
+    scene.action_text = actionLines.join('\n');
+    scene.text = textLines.join('\n');
+    scenes.push(scene);
+  });
+
+  const characters = deriveCharacters(scenes);
+  return {
+    mode,
+    scenes,
+    characters,
+    rejects: [...rejectMap.values()],
+    merge_offers: findMergeOffers(characters),
+  };
+}
+
+// Printed page number (brief §3.5): the running-header zone wins over
+// anything in the body; a sentence ending in a number is not a page.
+function printedPageFrom(headerLines) {
+  let best = null;
+  for (const line of headerLines) {
+    for (const seg of line.segments) {
+      const t = seg.text.trim();
+      if (/^\d{1,4}[A-Z]?\.?$/.test(t) && (!best || seg.x0 > best.x0)) {
+        best = { x0: seg.x0, text: t.replace(/\.$/, '') };
+      }
+    }
+  }
+  if (!best) return null;
+  return /^\d+$/.test(best.text) ? Number(best.text) : best.text;
+}
