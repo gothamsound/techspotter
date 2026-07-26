@@ -12,5 +12,6 @@ export function normalizePage(textContent) {
       x: it.transform[4],
       y: it.transform[5],
       width: it.width || 0,
+      font: it.fontName ?? null,
     }));
 }

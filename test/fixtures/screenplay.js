@@ -30,9 +30,9 @@ export class Screenplay {
     return this;
   }
 
-  #emit(x, text) {
+  #emit(x, text, italic = false) {
     if (this.#y < 72) throw new Error('fixture page overflow: call .page()');
-    this.#pages.at(-1).push({ x, y: this.#y, text });
+    this.#pages.at(-1).push({ x, y: this.#y, text, italic });
     this.#y -= LEADING;
     return this;
   }
@@ -84,6 +84,11 @@ export class Screenplay {
 
   dialogue(...lines) {
     for (const t of lines) this.#emit(X.dialogue, t);
+    return this;
+  }
+
+  dialogueItalic(...lines) {
+    for (const t of lines) this.#emit(X.dialogue, t, true);
     return this;
   }
 

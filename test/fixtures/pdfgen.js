@@ -8,17 +8,18 @@ function esc(s) {
 
 export function buildPdf(pages) {
   const objs = [];
-  const kidIds = pages.map((_, i) => 4 + i * 2);
+  const kidIds = pages.map((_, i) => 5 + i * 2);
   objs.push('<< /Type /Catalog /Pages 2 0 R >>');
   objs.push(`<< /Type /Pages /Kids [${kidIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pages.length} >>`);
   objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>');
+  objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Oblique >>');
   for (const page of pages) {
     const contentId = objs.length + 2;
     objs.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`,
     );
     const stream = page.runs
-      .map((r) => `BT /F1 12 Tf ${r.x} ${r.y} Td (${esc(r.text)}) Tj ET`)
+      .map((r) => `BT /${r.italic ? 'F2' : 'F1'} 12 Tf ${r.x} ${r.y} Td (${esc(r.text)}) Tj ET`)
       .join('\n');
     objs.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
   }

@@ -80,6 +80,17 @@ export function parseShow(pages) {
     furniture.add(flat[i].text.trim().toUpperCase());
   }
 
+  // Dominant body font: lines set in any other face are "alt font", the
+  // italic-run signal the playback detector's lyrics ruling uses.
+  const fontCount = new Map();
+  for (const l of flat) {
+    if (l.font) fontCount.set(l.font, (fontCount.get(l.font) ?? 0) + 1);
+  }
+  let dominantFont = null;
+  for (const [f, n] of fontCount) {
+    if (dominantFont === null || n > fontCount.get(dominantFont)) dominantFont = f;
+  }
+
   const scenes = [];
   const rejectMap = new Map();
 
@@ -94,10 +105,27 @@ export function parseShow(pages) {
       action_text: '',
       dialogue_by_character: {},
       text: '',
+      lines: [],
     };
     const textLines = [bound.h.heading];
     const actionLines = [];
     let openSpeaker = null;
+    const record = (line, band, extra = {}) => {
+      scene.lines.push({
+        text: line.text,
+        band,
+        page: line.page,
+        sheet: line.sheet,
+        y: line.y,
+        x0: line.minX,
+        x1: line.maxX,
+        altFont: Boolean(line.font && dominantFont && line.font !== dominantFont),
+        speaker: null,
+        cue: null,
+        ...extra,
+      });
+    };
+    record(bound.line, 'heading');
 
     for (let i = bound.idx + 1; i < end; i++) {
       const line = flat[i];
@@ -110,6 +138,7 @@ export function parseShow(pages) {
           scene.characters_speaking.push(openSpeaker);
         }
         scene.dialogue_by_character[openSpeaker] ??= '';
+        record(line, 'cue', { cue: openSpeaker });
         continue;
       }
       if (verdict?.reject) {
@@ -126,6 +155,7 @@ export function parseShow(pages) {
           });
         }
         rejectMap.get(key).occurrences.push({ scene: id, page: line.page });
+        record(line, 'rejected-cue');
         continue;
       }
 
@@ -135,10 +165,12 @@ export function parseShow(pages) {
           scene.dialogue_by_character[openSpeaker] +=
             (scene.dialogue_by_character[openSpeaker] ? '\n' : '') + line.text;
         }
+        record(line, band, { speaker: openSpeaker });
         continue;
       }
       openSpeaker = null;
       if (band === 'action') actionLines.push(line.text);
+      record(line, band);
     }
 
     scene.action_text = actionLines.join('\n');

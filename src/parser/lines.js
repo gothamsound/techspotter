@@ -23,8 +23,12 @@ export function groupLines(runs) {
 function finishLine({ y, runs }) {
   runs.sort((a, b) => a.x - b.x);
   const segments = [];
+  const fontCount = new Map();
   for (const run of runs) {
     const w = run.width || run.str.length * CHAR_W;
+    if (run.font) {
+      fontCount.set(run.font, (fontCount.get(run.font) ?? 0) + run.str.length);
+    }
     const seg = segments.at(-1);
     if (seg && run.x - seg.x1 < SEG_GAP) {
       seg.text += (run.x - seg.x1 > 3 ? ' ' : '') + run.str;
@@ -33,11 +37,16 @@ function finishLine({ y, runs }) {
       segments.push({ x0: run.x, x1: run.x + w, text: run.str });
     }
   }
+  let font = null;
+  for (const [f, n] of fontCount) {
+    if (font === null || n > fontCount.get(font)) font = f;
+  }
   return {
     y,
     minX: segments[0].x0,
     maxX: segments.at(-1).x1,
     segments,
+    font,
     text: segments.map((s) => s.text).join('  '),
   };
 }
