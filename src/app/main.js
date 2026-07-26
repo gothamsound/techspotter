@@ -38,6 +38,7 @@ const state = {
 };
 
 function rerender() {
+  $('peek').hidden = true; // a click can replace the hovered node before mouseleave fires
   render(state, act);
   syncBar();
 }

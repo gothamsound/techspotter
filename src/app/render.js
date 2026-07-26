@@ -256,19 +256,28 @@ function renderMatrix(state, act, table) {
     for (const c of chars) {
       const td = el('td', 'cell');
       let stateWord = 'not in scene';
+      let anchor = null;
       if (scene.characters_speaking.includes(c.name)) {
         td.classList.add('on');
         stateWord = 'speaks';
+        anchor = cueAnchorFor(scene, c.name);
       } else if (scene.present_confirmed?.includes(c.name)) {
         td.classList.add('pres');
         stateWord = 'present, no lines (confirmed)';
+        anchor = mentionAnchorFor(scene, c.name);
       } else if (scene.present_suggest?.includes(c.name)) {
         td.classList.add('sug');
         stateWord = 'named in action, no cue — click to confirm present';
+        anchor = mentionAnchorFor(scene, c.name);
       }
       td.append(el('div', 'd'));
       td.title = `${c.name} · scene ${scene.id} · ${stateWord}`;
       td.onclick = () => act.toggleCell(scene.id, c.name);
+      if (anchor) {
+        const cap = `${c.name} · scene ${scene.id} · pg ${scene.page} · ${stateWord}`;
+        td.onmouseenter = (e) => act.peekShow(e, anchor, cap);
+        td.onmouseleave = () => act.peekHide();
+      }
       tr.append(td);
     }
     tbody.append(tr);
@@ -329,6 +338,23 @@ function momentRow(state, act, scene, [layer, icon, cls], colspan) {
   }
   tr.append(td);
   return tr;
+}
+
+// Anchors for matrix-cell peeks, from the scene's own line records: the
+// character's cue line when they speak, the action line naming them when
+// they are present without lines. Imported shows have no line records
+// (and no PDF), so cells simply don't peek there.
+function cueAnchorFor(scene, name) {
+  const rec = scene.lines?.find((l) => l.band === 'cue' && l.cue === name);
+  return rec ? { page: rec.sheet, bbox: [rec.x0, rec.y - 3, rec.x1, rec.y + 9] } : null;
+}
+
+function mentionAnchorFor(scene, name) {
+  const base = name.replace(/\s*\(.*$/, '').trim();
+  const esc = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(?<![A-Za-z0-9])${esc}(?![A-Za-z0-9])`, 'i');
+  const rec = scene.lines?.find((l) => l.band === 'action' && re.test(l.text));
+  return rec ? { page: rec.sheet, bbox: [rec.x0, rec.y - 3, rec.x1, rec.y + 9] } : null;
 }
 
 function sceneMatches(scene, q) {
