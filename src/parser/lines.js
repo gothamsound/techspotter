@@ -17,7 +17,7 @@ export function groupLines(runs) {
     if (line && Math.abs(line.y - run.y) <= Y_TOL) line.runs.push(run);
     else clusters.push({ y: run.y, runs: [run] });
   }
-  return clusters.map(finishLine);
+  return clusters.map(finishLine).filter(Boolean);
 }
 
 function finishLine({ y, runs }) {
@@ -41,12 +41,18 @@ function finishLine({ y, runs }) {
   for (const [f, n] of fontCount) {
     if (font === null || n > fontCount.get(font)) font = f;
   }
+  // Revision stars: production drafts mark changed lines with margin
+  // asterisks (Peter's ruling, 2026-07-26 — a starred cue is still a cue).
+  // Pure-asterisk segments are change-bars, not text; drop them before
+  // geometry so they can't trip the wide gate.
+  const kept = segments.filter((s) => !/^\*+$/.test(s.text.trim()));
+  if (!kept.length) return null;
   return {
     y,
-    minX: segments[0].x0,
-    maxX: segments.at(-1).x1,
-    segments,
+    minX: kept[0].x0,
+    maxX: kept.at(-1).x1,
+    segments: kept,
     font,
-    text: segments.map((s) => s.text).join('  '),
+    text: kept.map((s) => s.text).join('  '),
   };
 }

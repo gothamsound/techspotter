@@ -7,7 +7,8 @@ import { bandOf, CUE_TAGS, CUE_STOP_WORDS, isFurniture } from './constants.js';
 
 export function evaluateCue(line, nextLine, ctx) {
   if (bandOf(line.minX) !== 'cue') return null;
-  const raw = line.text.trim();
+  // Merged-run revision stars ("TONY *") strip before any gate.
+  const raw = line.text.trim().replace(/^\*+\s*/, '').replace(/\s*\*+$/, '');
   if (!/[A-Z]/.test(raw) || raw !== raw.toUpperCase()) return null;
 
   const { name, qualified } = stripCueTags(raw);

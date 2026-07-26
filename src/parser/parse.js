@@ -7,6 +7,7 @@ import { groupLines } from './lines.js';
 import { parseHeading } from './heading.js';
 import { evaluateCue } from './cues.js';
 import { deriveCharacters, findMergeOffers } from './characters.js';
+import { derivePresence } from './presence.js';
 
 export class ParseError extends Error {
   constructor(code, message) {
@@ -186,13 +187,13 @@ export function parseShow(pages) {
   });
 
   const characters = deriveCharacters(scenes);
-  return {
+  return derivePresence({
     mode,
     scenes,
     characters,
     rejects: [...rejectMap.values()],
     merge_offers: findMergeOffers(characters),
-  };
+  });
 }
 
 // Printed page number (brief §3.5): the running-header zone wins over

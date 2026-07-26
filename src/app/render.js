@@ -140,7 +140,7 @@ function renderMatrix(state, act, table) {
   const layers = [];
   if (state.spot && state.view.sound) layers.push(['sound', '🔊', 'snd']);
   if (state.spot && state.view.video) layers.push(['video', '🎬', 'vid']);
-  const totalCols = 2 + layers.length + (adding ? 1 : 0) + chars.length;
+  const totalCols = 3 + layers.length + (adding ? 1 : 0) + chars.length;
 
   const thead = el('thead');
   const trh = el('tr');
@@ -151,6 +151,10 @@ function renderMatrix(state, act, table) {
   spkh.textContent = '🗣';
   spkh.title = 'Speaking characters in the scene';
   trh.append(spkh);
+  const prsh = el('th', 'bdgh');
+  prsh.textContent = '👥';
+  prsh.title = 'Present without lines (named in action, suggested or confirmed)';
+  trh.append(prsh);
   for (const [, icon] of layers) {
     const th = el('th', 'bdgh');
     th.textContent = icon;
@@ -208,6 +212,19 @@ function renderMatrix(state, act, table) {
       : 'no speaking characters detected';
     spk.append(spill);
     tr.append(spk);
+    const present = [
+      ...(scene.present_confirmed ?? []),
+      ...(scene.present_suggest ?? []),
+    ];
+    const prs = el('td', 'bdg prs');
+    const ppill = el('span', 'bpill');
+    ppill.textContent = present.length || '·';
+    if (present.length) prs.classList.add('has');
+    prs.title = present.length
+      ? `present, no lines: ${present.join(', ')}`
+      : 'nobody suggested present without lines';
+    prs.append(ppill);
+    tr.append(prs);
     for (const [layer, , cls] of layers) {
       const moments = state.spot[layer].moments.filter((m) => m.scene === scene.id);
       const live = moments.filter((m) => !m.dismissed).length;
@@ -234,9 +251,19 @@ function renderMatrix(state, act, table) {
     }
     for (const c of chars) {
       const td = el('td', 'cell');
-      if (scene.characters_speaking.includes(c.name)) td.classList.add('on');
+      let stateWord = 'not in scene';
+      if (scene.characters_speaking.includes(c.name)) {
+        td.classList.add('on');
+        stateWord = 'speaks';
+      } else if (scene.present_confirmed?.includes(c.name)) {
+        td.classList.add('pres');
+        stateWord = 'present, no lines (confirmed)';
+      } else if (scene.present_suggest?.includes(c.name)) {
+        td.classList.add('sug');
+        stateWord = 'named in action, no cue — click to confirm present';
+      }
       td.append(el('div', 'd'));
-      td.title = `${c.name} · scene ${scene.id}`;
+      td.title = `${c.name} · scene ${scene.id} · ${stateWord}`;
       td.onclick = () => act.toggleCell(scene.id, c.name);
       tr.append(td);
     }

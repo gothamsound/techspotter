@@ -7,7 +7,7 @@ import {
   addCharacter,
   promoteReject,
   dismissReject,
-  toggleSpeaker,
+  cycleCell,
   renameCharacter,
   deleteCharacter,
   mergeCharacters,
@@ -68,7 +68,7 @@ function twoTap(kind, key, commit) {
 const act = {
   toggleCell(sceneId, name) {
     disarm();
-    toggleSpeaker(state.parsed, sceneId, name);
+    cycleCell(state.parsed, sceneId, name);
     rerender();
   },
   togglePending(sceneId) {

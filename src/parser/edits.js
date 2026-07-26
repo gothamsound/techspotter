@@ -5,6 +5,7 @@
 // scene keeps their column until deliberately deleted.
 
 import { deriveCharacters, findMergeOffers } from './characters.js';
+import { derivePresence } from './presence.js';
 
 export function textSearchScenes(parsed, name) {
   const re = boundaryRegex(name.trim());
@@ -51,6 +52,33 @@ export function toggleSpeaker(parsed, sceneId, name) {
   const i = scene.characters_speaking.indexOf(name);
   if (i >= 0) scene.characters_speaking.splice(i, 1);
   else scene.characters_speaking.push(name);
+  refresh(parsed);
+  return parsed;
+}
+
+// Cell state machine (operator authority, one click advances):
+// suggested (dashed) -> confirmed present (solid) -> speaking (green) ->
+// empty (suggestion dismissed so it stays empty) -> speaking -> ...
+export function cycleCell(parsed, sceneId, name) {
+  const scene = parsed.scenes.find((s) => s.id === sceneId);
+  if (!scene) return parsed;
+  scene.present_confirmed ??= [];
+  scene.present_dismissed ??= [];
+  const speaking = scene.characters_speaking.includes(name);
+  const confirmed = scene.present_confirmed.includes(name);
+  const suggested = scene.present_suggest?.includes(name);
+  if (speaking) {
+    scene.characters_speaking.splice(scene.characters_speaking.indexOf(name), 1);
+    if (!scene.present_dismissed.includes(name)) scene.present_dismissed.push(name);
+  } else if (confirmed) {
+    scene.present_confirmed.splice(scene.present_confirmed.indexOf(name), 1);
+    scene.characters_speaking.push(name);
+  } else if (suggested) {
+    scene.present_confirmed.push(name);
+  } else {
+    scene.present_dismissed = scene.present_dismissed.filter((n) => n !== name);
+    scene.characters_speaking.push(name);
+  }
   refresh(parsed);
   return parsed;
 }
@@ -137,6 +165,7 @@ function refresh(parsed) {
         (d) => d.variant === o.variant && d.canonical === o.canonical,
       ),
   );
+  derivePresence(parsed);
 }
 
 // Word-boundary search that survives names like "MERC #1": boundaries are

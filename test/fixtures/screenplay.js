@@ -30,10 +30,20 @@ export class Screenplay {
     return this;
   }
 
+  #lastY = 0;
+
   #emit(x, text, italic = false) {
     if (this.#y < 72) throw new Error('fixture page overflow: call .page()');
     this.#pages.at(-1).push({ x, y: this.#y, text, italic });
+    this.#lastY = this.#y;
     this.#y -= LEADING;
+    return this;
+  }
+
+  // Right-margin revision star on the previously emitted line, the way
+  // production drafts mark changed lines.
+  star(x = 576) {
+    this.#pages.at(-1).push({ x, y: this.#lastY, text: '*' });
     return this;
   }
 

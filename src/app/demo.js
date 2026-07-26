@@ -81,7 +81,7 @@ export function demoPdf() {
     .blank()
     .slugNumbered('24', 'EXT. RIVERBANK - DAWN')
     .blank()
-    .action('A search line combs the reeds.')
+    .action('A search line combs the reeds. Dana watches from the ridge.')
     .action('ON THE TV: a newscast about the flood.')
     .action('They watch the footage on a laptop.')
     .blank()

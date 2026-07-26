@@ -22,7 +22,7 @@ export function isSlugText(text) {
 // segment; "EXT. HIGHWAY 101 - DAY" keeps its 101.
 export function parseHeading(line) {
   let segs = line.segments
-    .map((s) => ({ x0: s.x0, text: s.text.trim() }))
+    .map((s) => ({ x0: s.x0, text: s.text.trim().replace(/\s*\*+$/, '') }))
     .filter((s) => s.text);
   if (!segs.length) return null;
 
