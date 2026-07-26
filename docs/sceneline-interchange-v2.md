@@ -128,3 +128,12 @@ sides-enlarger session's adoption review.)*
 *Rev 2026-07-26c — examples sanitized for public repos: show title, source
 filename, and example character names replaced with fictional placeholders.
 No semantic change; adopting repos should sync their copies.*
+
+*Rev 2026-07-26d — product-name reconciliation: the prep bench is TechSpotter
+(early copies said "Tablework"). This canonical copy has carried the rename
+since its founding; the owner column and generator example read
+techspotter/1.0. Legacy `tablework/*` generator and `"source":"tablework"`
+provenance strings in existing files remain valid, and readers MUST treat
+them as TechSpotter's. (Rename rev requested by the Tablecut session's
+Brief D; the sanitized examples of rev c carry forward. Adopting repos:
+replace your copy with this file whole.)*
