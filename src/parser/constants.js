@@ -24,11 +24,12 @@ export function bandOf(x) {
 export const CUE_TAGS = new Set(['V.O.', 'O.S.', 'O.C.', "CONT'D"]);
 
 // Words that mark a cue-shaped line as prose, not a character (brief §3.2).
-// Strict on purpose: a real ELEANOR FROM HR lands on the reject rail with
-// the gate named, never silently dropped.
+// Conjunctions plus the brief-named FROM only. Prepositions are NOT stop
+// words (Peter, 2026-07-26): epithet characters are built from them (MAN
+// IN BLACK, GIRL ON TRAIN, VOICE OF GOD). ELEANOR FROM HR remains the
+// known false positive the reject rail exists to catch.
 export const CUE_STOP_WORDS = new Set([
-  'AND', 'OR', 'BUT', 'FROM', 'WITH', 'TO', 'IF', 'AS', 'AT', 'ON', 'IN',
-  'BY', 'OF', 'FOR', 'VS', 'VS.',
+  'AND', 'OR', 'BUT', 'FROM', 'TO', 'IF', 'VS', 'VS.',
 ]);
 
 const FURNITURE_RE = /^(EPISODE|ACT|PART|DAY|SCENE|CHAPTER|TEASER|COLD OPEN|TITLE|END OF)\b/;

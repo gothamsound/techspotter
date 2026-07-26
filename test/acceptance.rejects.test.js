@@ -39,19 +39,25 @@ function fixture() {
     .dialogue('Happy birthday to you...')
     .blank()
     .dualCue('LOLA', 'DENNY')
-    .dialogue('What?');
+    .dialogue('What?')
+    .blank()
+    .cue('MAN IN BLACK')
+    .dialogue('You were told not to come.');
   return sp.build();
 }
 
 test('gate rejects surface with reasons; matrix stays clean', async () => {
   const parsed = parseShow(await extractRuns(fixture()));
 
+  // Epithet characters with prepositions are real (Peter's ruling): MAN IN
+  // BLACK is a column, not a chip.
   assert.deepEqual(
-    parsed.characters.map((c) => c.name),
-    ['VICTOR'],
+    parsed.characters.map((c) => c.name).sort(),
+    ['MAN IN BLACK', 'VICTOR'],
   );
 
   const byName = Object.fromEntries(parsed.rejects.map((r) => [r.name, r]));
+  assert.ok(!('MAN IN BLACK' in byName));
   assert.equal(byName['MERC #1'].reason, "charset '#'");
   assert.deepEqual(
     byName['MERC #1'].occurrences.map((o) => o.scene),
