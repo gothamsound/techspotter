@@ -1,9 +1,10 @@
-// .sceneline interchange v2 (docs/sceneline-interchange-v2.md, rev f).
+// .sceneline interchange v2 (docs/sceneline-interchange-v2.md, rev g).
 // TechSpotter owns extensions.sound, extensions.video, and its
 // x-techspotter review-state block. THE LAW: every foreign extension
 // block and unknown top-level field is preserved value-identically
 // across import -> edit -> export. Failure to read is loud, never a
-// guess.
+// guess. Burn-in strip records ride show.burn_ins (§2 rule 7, rev g);
+// files we wrote before rev g carried them in x-techspotter.
 
 import { recompute } from '../parser/edits.js';
 
@@ -64,6 +65,15 @@ export function buildSceneline(parsed, spot, opts = {}) {
       cast_aliases: structuredClone(parsed.cast_aliases ?? {}),
       scenes,
       review_dismissed: structuredClone(parsed.review_dismissed ?? []),
+      burn_ins: (parsed.burn_ins ?? []).map((b) => ({
+        text: b.text,
+        signal: b.signal,
+        pages: b.pages,
+        count: b.count,
+        anchor: b.anchor
+          ? { source_doc: opts.sourceFile ?? '', ...structuredClone(b.anchor) }
+          : null,
+      })),
     },
     extensions: {
       ...structuredClone(opts.foreign?.extensions ?? {}),
@@ -73,7 +83,6 @@ export function buildSceneline(parsed, spot, opts = {}) {
         rejects: structuredClone(parsed.rejects ?? []),
         dismissed_offers: structuredClone(parsed.dismissed_offers ?? []),
         text_channel_kept: structuredClone(parsed.text_channel_kept ?? []),
-        burn_ins: structuredClone(parsed.burn_ins ?? []),
       },
     },
   };
@@ -121,7 +130,8 @@ export function parseSceneline(text) {
     merge_offers: [],
     dismissed_offers: structuredClone(xt.dismissed_offers ?? []),
     text_channel_kept: structuredClone(xt.text_channel_kept ?? []),
-    burn_ins: structuredClone(xt.burn_ins ?? []),
+    // rev g home first; x-techspotter is where our pre-rev-g files put them
+    burn_ins: structuredClone(show.burn_ins ?? xt.burn_ins ?? []),
     cast_aliases: structuredClone(show.cast_aliases ?? {}),
     review_dismissed: structuredClone(show.review_dismissed ?? []),
   };
