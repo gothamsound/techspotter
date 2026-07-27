@@ -1,6 +1,9 @@
 // Minimal PDF writer for synthetic screenplay fixtures. ASCII text only,
 // Courier 12 on US-letter pages, one Tj per positioned run so pdf.js hands
-// back one text item per run with exact coordinates.
+// back one text item per run with exact coordinates. Rotated runs are
+// vertical (90°, the corpus's edge-watermark form): pdf.js drops glyphs
+// positioned outside the MediaBox, so a diagonal from the right margin
+// would come back truncated.
 
 function esc(s) {
   return s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
@@ -21,7 +24,7 @@ export function buildPdf(pages) {
     const stream = page.runs
       .map((r) =>
         r.rotate
-          ? `BT /${r.italic ? 'F2' : 'F1'} 12 Tf 0.7071 0.7071 -0.7071 0.7071 ${r.x} ${r.y} Tm (${esc(r.text)}) Tj ET`
+          ? `BT /${r.italic ? 'F2' : 'F1'} 12 Tf 0 1 -1 0 ${r.x} ${r.y} Tm (${esc(r.text)}) Tj ET`
           : `BT /${r.italic ? 'F2' : 'F1'} 12 Tf ${r.x} ${r.y} Td (${esc(r.text)}) Tj ET`,
       )
       .join('\n');

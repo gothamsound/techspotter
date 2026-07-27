@@ -3,7 +3,8 @@
 // gate named, provided it passes the noise filter (cue-positioned AND
 // followed by dialogue-band text). Furniture is structural, never a chip.
 
-import { bandOf, CUE_TAGS, CUE_STOP_WORDS, isFurniture } from './constants.js';
+import { bandOf, isFurniture } from './constants.js';
+import { isStandardTag, CUE_STOP_WORDS } from './policy.js';
 
 export function evaluateCue(line, nextLine, ctx) {
   if (bandOf(line.minX) !== 'cue') return null;
@@ -50,9 +51,11 @@ function failGate(line, name) {
   return null;
 }
 
-// Strips trailing parentheticals. The four standard tags (V.O., O.S.,
-// O.C., CONT'D) collapse to the same character; anything else is a
-// distinct-performer qualifier kept in the name (brief §3.3).
+// Strips trailing parentheticals. Silent-tier standard tags (policy
+// standard_tags: V.O./O.S./O.C./CONT'D plus the ruled phone/intercut/
+// prelap kin; dot- and space-insensitive) collapse to the same character;
+// anything else is a distinct-performer qualifier kept in the name
+// (brief §3.3) — channel variants stay distinct columns, offer-only.
 function stripCueTags(text) {
   let name = text.trim();
   const quals = [];
@@ -61,7 +64,7 @@ function stripCueTags(text) {
     if (!m || !m[1].trim()) break;
     const tag = m[2].trim();
     name = m[1].trim();
-    if (!CUE_TAGS.has(tag)) quals.unshift(tag);
+    if (!isStandardTag(tag)) quals.unshift(tag);
   }
   if (!quals.length) return { name, qualified: false };
   return { name: `${name} (${quals.join(') (')})`, qualified: true };

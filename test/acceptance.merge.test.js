@@ -61,7 +61,7 @@ test('surname and channel variants offer; qualifier variants never do', async ()
 
   assert.deepEqual(parsed.merge_offers, [
     { variant: 'VICTOR HALE', canonical: 'VICTOR' },
-    { variant: 'VALERIE (ON TV)', canonical: 'VALERIE', channel: true },
+    { variant: 'VALERIE (ON TV)', canonical: 'VALERIE', channel: true, kind: 'tv' },
   ]);
   assert.ok(!parsed.merge_offers.some((o) => o.variant === 'YOUNG VALERIE'));
 

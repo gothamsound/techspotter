@@ -1,7 +1,7 @@
 // Character identity (brief §3.3): variants are distinct performers by
 // default; same-person guesses are offer-only merge suggestions.
 
-import { CHANNEL_QUALS, VOICE_CHANNEL_RE, TEXT_CHANNEL_RE } from './constants.js';
+import { foldName } from './policy.js';
 
 export function deriveCharacters(scenes) {
   const map = new Map();
@@ -21,10 +21,12 @@ export function deriveCharacters(scenes) {
 //   name's (extra tokens sit in surname position). A leading qualifier
 //   (YOUNG VALERIE) is not a prefix match, so it never offers.
 //   Canonical = the name used in more scenes.
-// - channel form (interim fold-class mirror, offer-only): a recognized
-//   channel qualifier or possessive VOICE whose base exists as a plain
-//   character offers a fold into the base. TEXT-family possessives are
-//   NOT offered here: they are conversion candidates (video cues).
+// - channel form (policy channel tier, offer-only): a recognized channel
+//   variant (parenthetical tag or possessive noun) whose base exists as a
+//   plain character offers a fold into the base, carrying the policy
+//   channel kind. TEXT-family (kind 'text') is NOT offered here: those
+//   columns are conversion candidates (video cues), Peter's Layer 2
+//   ruling for this bench.
 export function findMergeOffers(characters) {
   const offers = [];
   const names = new Set(characters.map((c) => c.name));
@@ -46,23 +48,21 @@ export function findMergeOffers(characters) {
     }
   }
   for (const c of characters) {
-    if (TEXT_CHANNEL_RE.test(c.name)) continue;
-    const qual = c.name.match(/^(.+?)\s*\(([^()]+)\)$/);
-    if (qual && CHANNEL_QUALS.has(qual[2].trim()) && names.has(qual[1].trim())) {
-      offers.push({ variant: c.name, canonical: qual[1].trim(), channel: true });
-      continue;
-    }
-    const voice = c.name.match(VOICE_CHANNEL_RE);
-    if (voice && names.has(voice[1])) {
-      offers.push({ variant: c.name, canonical: voice[1], channel: true });
+    const f = foldName(c.name);
+    if (f.tier !== 'channel' || f.kind === 'text') continue;
+    if (f.base && f.base !== c.name && names.has(f.base)) {
+      offers.push({ variant: c.name, canonical: f.base, channel: true, kind: f.kind });
     }
   }
   return offers;
 }
 
 // Columns that Peter's text-channel ruling marks as conversion candidates:
-// a text on a screen is a video cue, not a performer. Offer-only; the
-// operator's two-tap convert deletes the column, the video moment stands.
+// a text on a screen is a video cue, not a performer (policy kind 'text':
+// TEXT/TEXTS/POST/POSTS/DM/DMS possessives). Offer-only; the operator's
+// two-tap convert deletes the column, the video moment stands.
 export function textChannelNames(characters) {
-  return characters.map((c) => c.name).filter((n) => TEXT_CHANNEL_RE.test(n));
+  return characters
+    .map((c) => c.name)
+    .filter((n) => foldName(n).kind === 'text');
 }

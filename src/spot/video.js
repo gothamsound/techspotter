@@ -4,7 +4,7 @@
 // (FaceTime = phone + video-playback).
 
 import { VIDEO_TRIGGERS } from './lexicon.js';
-import { TEXT_CHANNEL_RE } from '../parser/constants.js';
+import { foldName } from '../parser/policy.js';
 import { lineAnchor, blockAnchor, snippetAt, characterNames, namesOnLine, makeMoment } from './util.js';
 
 const CATEGORY_ORDER = ['phone-screen', 'tv-screen', 'video-playback'];
@@ -17,7 +17,7 @@ export function spotVideo(parsed, opts = {}) {
       // A TEXT-channel cue is a message shown on screen: phone-screen
       // moment with the message content as evidence (Peter's ruling; the
       // moment stands whether or not the operator converts the column).
-      if (rec.band === 'cue' && rec.cue && TEXT_CHANNEL_RE.test(rec.cue)) {
+      if (rec.band === 'cue' && rec.cue && foldName(rec.cue).kind === 'text') {
         const body = [];
         for (let j = i + 1; j < scene.lines.length; j++) {
           const r = scene.lines[j];

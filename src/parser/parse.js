@@ -28,6 +28,15 @@ export function parseShow(rawPages) {
 
   const { pages, burnIns } = stripBurnIns(rawPages);
 
+  // Printed page numbers read from PRE-strip lines (policy burn_in note):
+  // the printed-page contract never depends on any strip rule. Rotated
+  // debris is excluded — it is never part of a header line.
+  const printedPages = rawPages.map((runs) =>
+    printedPageFrom(
+      groupLines(runs.filter((r) => !r.rot)).filter((l) => l.y > BANDS.headerY),
+    ),
+  );
+
   const sheets = pages.map((runs, i) => {
     const lines = groupLines(runs);
     const headerLines = lines.filter((l) => l.y > BANDS.headerY);
@@ -36,7 +45,7 @@ export function parseShow(rawPages) {
       sheet: i + 1,
       headerLines,
       bodyLines,
-      printedPage: printedPageFrom(headerLines),
+      printedPage: printedPages[i],
     };
   });
 

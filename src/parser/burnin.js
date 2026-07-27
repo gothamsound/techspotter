@@ -1,71 +1,117 @@
-// Burn-in / watermark stripping (Peter's real-script finding, 2026-07-26:
-// a per-page recipient stamp glued itself onto action lines). Two signals,
-// both stripped BEFORE line grouping and both surfaced loudly:
-// - rotated runs: screenplay body text is never rotated;
-// - the same MIXED-CASE text at the same position on most pages: stamped
-//   furniture (recipient names are mixed case; screenplay structure that
-//   legitimately repeats — cues, slugs, single watermark letters — is all
-//   caps and therefore exempt, which also keeps the brief's §3.2
-//   single-glyph cue gate in charge of its own territory).
+// Burn-in / watermark stripping — the scriptparse `burn_in` policy rule
+// (hub issue #16 ruling), interpreted at this bench's natural unit: the
+// pdf.js text item (the policy pins word-lower-left; parity obligation is
+// conformance outcomes, per hub issue #33). Two signals, both applied to
+// runs BEFORE line clustering, both surfaced loudly:
+// - rotated runs strip unconditionally: screenplay body text is never
+//   rotated;
+// - repeated-position text: the same trimmed text in the same quantized
+//   cell (floor(coord / grid), lower-left, anchor space) on at least
+//   max(min_pages, ceil(pages * fraction)) pages. Candidates group per
+//   page by y-bucket; the group strips only if its joined text contains
+//   a lowercase letter (all-caps structure — cues, slugs — and single
+//   capital letters never strip: the single-glyph cue gate keeps its
+//   territory). A group on a line whose rightmost run ends in a printed-
+//   page token ("6.", "6A.") is a running header and never strips.
+// Record shape rides interchange rev g (§2 rule 7): text, signal, pages
+// (distinct), count (total), anchor (first seen).
 
-const MIN_PAGES = 4;
-const Q = 24; // position quantum in points
+import { BURN_IN as B } from './policy.js';
+
+const PAGE_TOKEN_RE = /^[A-Za-z]?\d+[A-Za-z]?\.$/;
+const cell = (v) => Math.floor(v / B.repeat_grid_pt);
+const runKey = (run) => `${run.str.trim()}|${cell(run.x)}|${cell(run.y)}`;
+const runEnd = (run) => run.x + (run.width || 0);
 
 export function stripBurnIns(pages) {
-  const seen = new Map(); // key -> Set of page indexes
+  const seen = new Map(); // repeat key -> Set of page indexes
   pages.forEach((runs, p) => {
     for (const run of runs) {
-      if (run.y > 720 || run.rot) continue;
-      const key = burnKey(run);
+      if (run.rot) continue;
+      const key = runKey(run);
       if (!seen.has(key)) seen.set(key, new Set());
       seen.get(key).add(p);
     }
   });
-
-  const threshold = Math.max(MIN_PAGES, Math.ceil(pages.length / 2));
-  const isRepeated = (run) =>
-    eligible(run.str) && (seen.get(burnKey(run))?.size ?? 0) >= threshold;
-
-  const stamped = new Map(); // text -> Set of 1-based pages
-  const rotated = new Map(); // 1-based page -> [texts in stream order]
-  const cleaned = pages.map((runs, p) =>
-    runs.filter((run) => {
-      if (run.rot) {
-        if (!rotated.has(p + 1)) rotated.set(p + 1, []);
-        rotated.get(p + 1).push(run.str.trim());
-        return false;
-      }
-      if (run.y <= 720 && isRepeated(run)) {
-        const t = run.str.trim();
-        if (!stamped.has(t)) stamped.set(t, new Set());
-        stamped.get(t).add(p + 1);
-        return false;
-      }
-      return true;
-    }),
+  const threshold = Math.max(
+    B.repeat_min_pages,
+    Math.ceil(pages.length * B.repeat_page_fraction),
   );
 
-  const burnIns = [...stamped.entries()].map(([text, pageSet]) => ({
-    text,
+  const records = new Map(); // signal|text -> record
+  const note = (signal, text, page, bbox) => {
+    const id = `${signal}|${text}`;
+    if (!records.has(id)) {
+      records.set(id, {
+        text,
+        signal,
+        pageSet: new Set(),
+        count: 0,
+        anchor: { page, bbox },
+      });
+    }
+    const r = records.get(id);
+    r.pageSet.add(page);
+    r.count += 1;
+  };
+
+  const cleaned = pages.map((runs, p) => {
+    const strip = new Set();
+
+    // Signal 1: rotated runs, one whole-text record per page group.
+    const rotated = runs.filter((r) => r.rot);
+    if (B.strip_rotated_runs && rotated.length) {
+      for (const r of rotated) strip.add(r);
+      const text = rotated.map((r) => r.str.trim()).filter(Boolean).join(' ');
+      const first = rotated[0];
+      note('rotated', text, p + 1, [
+        first.x,
+        first.y - 3,
+        Math.max(...rotated.map(runEnd)),
+        first.y + 9,
+      ]);
+    }
+
+    // Signal 2: repeated-position groups per y-bucket.
+    const byBucket = new Map();
+    for (const run of runs) {
+      if (run.rot) continue;
+      const b = cell(run.y);
+      if (!byBucket.has(b)) byBucket.set(b, []);
+      byBucket.get(b).push(run);
+    }
+    for (const line of byBucket.values()) {
+      let cands = line.filter((r) => seen.get(runKey(r)).size >= threshold);
+      if (B.single_capital_exempt) {
+        cands = cands.filter((r) => !/^[A-Z]$/.test(r.str.trim()));
+      }
+      if (!cands.length) continue;
+      cands.sort((a, b2) => a.x - b2.x);
+      const joined = cands.map((r) => r.str.trim()).join(' ');
+      if (B.repeat_requires_lowercase && !/[a-z]/.test(joined)) continue;
+      if (B.repeat_exempt_trailing_page_token) {
+        const rightmost = line.reduce((m, r) => (runEnd(r) > runEnd(m) ? r : m));
+        const lastWord = rightmost.str.trim().split(/\s+/).at(-1) ?? '';
+        if (PAGE_TOKEN_RE.test(lastWord)) continue; // running header
+      }
+      for (const r of cands) strip.add(r);
+      note('repeated-position', joined, p + 1, [
+        cands[0].x,
+        cands[0].y - 3,
+        Math.max(...cands.map(runEnd)),
+        cands[0].y + 9,
+      ]);
+    }
+
+    return runs.filter((r) => !strip.has(r));
+  });
+
+  const burnIns = [...records.values()].map(({ pageSet, ...r }) => ({
+    text: r.text,
+    signal: r.signal,
     pages: pageSet.size,
-    dismissed: false,
+    count: r.count,
+    anchor: r.anchor,
   }));
-  if (rotated.size) {
-    const firstPage = Math.min(...rotated.keys());
-    burnIns.push({
-      text: rotated.get(firstPage).filter(Boolean).join(' '),
-      pages: rotated.size,
-      dismissed: false,
-    });
-  }
   return { pages: cleaned, burnIns };
-}
-
-function burnKey(run) {
-  return `${run.str.trim()}|${Math.round(run.x / Q)}|${Math.round(run.y / Q)}`;
-}
-
-function eligible(str) {
-  const t = str.trim();
-  return t.length >= 2 && t !== t.toUpperCase();
 }

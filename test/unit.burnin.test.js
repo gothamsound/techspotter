@@ -18,12 +18,15 @@ function stamped(pages, opts = {}) {
       .header(`${i}.`)
       .slugNumbered(String(i), `INT. EXAM ROOM - ${times[i % times.length]}`);
     sp.burnin('Tony Starbuck', { x: 108, y: 690, ...opts });
-    // realistic: content varies and drifts per page; only the stamp repeats
+    // realistic: content varies and drifts per page; only the stamp
+    // repeats. No line ends in a bare "N." token: a trailing printed-page
+    // token on the stamp's line would (correctly) arm the running-header
+    // exemption, which has its own test.
     sp.blank(1 + (i % 3))
-      .action(`Nothing but the hum of fluorescent light, hour ${i}.`)
+      .action(`Nothing but the hum of fluorescent light in hour ${i} tonight.`)
       .blank()
       .cue('VICTOR')
-      .dialogue(`Start clock number ${i}.`);
+      .dialogue(`Start clock number ${i} now.`);
   }
   return sp.build();
 }

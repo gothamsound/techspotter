@@ -42,7 +42,7 @@ test('ON THE PHONE collapses silently; VOICE offers; TEXT converts', async () =>
   assert.match(p.scenes[0].dialogue_by_character.MYRON, /Where is she\?/);
   const offers = p.merge_offers.filter((o) => o.channel);
   assert.deepEqual(offers, [
-    { variant: "WIN'S VOICE", canonical: 'WIN', channel: true },
+    { variant: "WIN'S VOICE", canonical: 'WIN', channel: true, kind: 'voice' },
   ]);
   assert.ok(!p.merge_offers.some((o) => o.variant === "MYRON'S TEXT"));
 });
@@ -60,6 +60,44 @@ test('TEXT-channel cue emits a phone-screen moment with the message', async () =
   assert.equal(texts[0].category, 'phone-screen');
   assert.match(texts[0].snippet, /On my way\. Do not move\./);
   assert.deepEqual(texts[0].characters, ["MYRON'S TEXT"]);
+});
+
+test('issue #22 phone-device kin collapse silently (policy silent tier)', async () => {
+  const sp = new Screenplay();
+  sp.page().slug('INT. VAN - NIGHT').blank();
+  for (const tag of ['INTO PHONE', 'OVER THE PHONE', 'ON SPEAKER', 'OVER SPEAKER', 'SPEAKERPHONE']) {
+    sp.cue(`MYRON (${tag})`).dialogue('Copy that, rolling.').blank();
+  }
+  sp.cue('MYRON (V.O.)').dialogue('And dot-insensitively.');
+  const p = parseShow(await extractRuns(sp.build()));
+  assert.deepEqual(p.characters.map((c) => c.name), ['MYRON']);
+  assert.deepEqual(p.merge_offers, []);
+});
+
+test("X'S DM converts (TEXT family); X'S VOICEMAIL offers (voice kind)", async () => {
+  const sp = new Screenplay();
+  sp.page()
+    .slug('INT. LOFT - DAY')
+    .blank()
+    .cue('WANDA')
+    .dialogue('Read it back.')
+    .blank()
+    .cue("WANDA'S DM")
+    .dialogue('Meet at the loading dock.')
+    .blank()
+    .cue("WANDA'S VOICEMAIL")
+    .dialogue('You have reached Wanda.');
+  const p = parseShow(await extractRuns(sp.build()));
+  assert.deepEqual(textChannelNames(p.characters), ["WANDA'S DM"]);
+  assert.ok(!p.merge_offers.some((o) => o.variant === "WANDA'S DM"));
+  assert.deepEqual(
+    p.merge_offers.filter((o) => o.channel),
+    [{ variant: "WANDA'S VOICEMAIL", canonical: 'WANDA', channel: true, kind: 'voice' }],
+  );
+  const spot = spotShow(p);
+  const texts = spot.video.moments.filter((m) => m.trigger === 'text-channel cue');
+  assert.equal(texts.length, 1);
+  assert.match(texts[0].snippet, /Meet at the loading dock\./);
 });
 
 test('committing a channel offer folds scenes and dialogue', async () => {
