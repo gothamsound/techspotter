@@ -34,6 +34,11 @@ Tests run in Node against synthetic screenplay PDFs generated in memory by
 repo: `.gitignore` blocks `*.pdf` and `*.sceneline`, and fixtures are always
 generated, never copied.
 
+## License
+
+MIT, see [LICENSE](LICENSE). The bundled libraries in `vendor/` (pdf.js,
+SheetJS) are Apache-2.0 and keep their own license notices in-file.
+
 ## Docs
 
 - `docs/techspotter-build-brief.md`: the build brief (parser rules, department

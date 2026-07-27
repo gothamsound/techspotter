@@ -228,6 +228,7 @@ tr.mrow td{background:var(--raised);padding:10px 14px}
 .mx-foot b{color:var(--txt)}
 
 .foot{padding:10px 20px 26px;font-family:var(--mono);font-size:var(--fs-meta);color:var(--txt-3);text-align:center;letter-spacing:.03em}
+.foot a{color:var(--txt-3);text-decoration:none;border-bottom:1px solid var(--cool-dim)}
 
 /* ---- source peek: hover any anchored artifact, see the real page ---- */
 .peek{position:fixed;z-index:50;max-width:600px;background:var(--panel);

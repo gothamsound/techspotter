@@ -2,6 +2,7 @@
   "name": "techspotter",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Browser-only script breakdown: scene-by-character matrix plus Sound and Video department spotting. All processing happens locally.",
   "type": "module",
   "scripts": {
