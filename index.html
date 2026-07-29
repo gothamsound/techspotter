@@ -119,6 +119,24 @@
     <div class="pk-cap" id="peekCap"></div>
   </div>
 </div>
+<script>
+// Preflight, deliberately ES5: on a below-floor browser the app module
+// would die mid-parse with "undefined is not a function", blaming the PDF.
+// Diagnose it here instead. Floor is Safari/iOS 15.4-era JavaScript; the
+// vendored legacy pdf.js polyfills everything newer than that.
+(function () {
+  if (typeof structuredClone === 'function' &&
+      typeof Object.hasOwn === 'function' &&
+      typeof Array.prototype.at === 'function') return;
+  var bar = document.getElementById('errBar');
+  bar.textContent = 'This browser is too old to run TechSpotter. On iPhone or iPad, ' +
+    'update the system in Settings > General > Software Update (needs iOS 15.4 or later). ' +
+    'On a computer, update your browser. Nothing was uploaded; your script never leaves your device.';
+  bar.removeAttribute('hidden');
+  document.getElementById('dropzone').style.display = 'none';
+  document.getElementById('demoBtn').style.display = 'none';
+})();
+</script>
 <script type="module" src="src/app/main.js"></script>
 </body>
 </html>

@@ -1,5 +1,8 @@
-// Browser-side extraction: the same pdf.js the tests use, bundled locally
-// in vendor/ (zero network after page load).
+// Browser-side extraction: the same pdf.js LEGACY build the tests use,
+// bundled locally in vendor/ (zero network after page load). Legacy, not
+// modern: the modern build calls Promise.withResolvers (Safari 17.4+) and
+// URL.parse (Safari 18+) unguarded, which killed every pre-iOS-18 device.
+// See vendor/pdfjs/README.md before bumping.
 
 import { getDocument, GlobalWorkerOptions } from '../../vendor/pdfjs/pdf.min.mjs';
 import { normalizePage } from '../extract/runs.js';
