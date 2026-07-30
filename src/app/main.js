@@ -23,6 +23,36 @@ import { matrixRows, matrixCsv, momentRows } from '../export/grid.js';
 
 const $ = (id) => document.getElementById(id);
 
+// Remote-diagnosable failures: every unexpected error carries its top stack
+// frames into the error bar, so a screenshot from a phone is enough to
+// locate the throw. Expected failures (ParseError, IngestError) stay clean.
+function showError(msg, e) {
+  const bar = $('errBar');
+  bar.textContent = msg;
+  const frames = ((e && e.stack) || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' | ')
+    .replace(/\s+/g, ' ')
+    .slice(0, 220);
+  if (frames) {
+    const det = document.createElement('span');
+    det.className = 'err-det';
+    det.textContent = `[b0730a: ${frames}]`;
+    bar.append(det);
+  }
+  bar.hidden = false;
+}
+
+window.addEventListener('unhandledrejection', (ev) => {
+  showError(`Unexpected error. ${(ev.reason && ev.reason.message) || ev.reason}`, ev.reason);
+});
+window.addEventListener('error', (ev) => {
+  if (ev.error) showError(`Unexpected error. ${ev.error.message || ev.error}`, ev.error);
+});
+
 const state = {
   parsed: null,
   spot: null,
@@ -289,10 +319,8 @@ async function loadPdf(bytes, label) {
     rerender();
   } catch (e) {
     if (doc && doc !== state.pdfDoc) await doc.destroy().catch(() => {});
-    const msg =
-      e instanceof ParseError ? e.message : `Could not read this PDF. ${e.message || e}`;
-    $('errBar').textContent = msg;
-    $('errBar').hidden = false;
+    if (e instanceof ParseError) showError(e.message);
+    else showError(`Could not read this PDF. ${e.message || e}`, e);
   } finally {
     dz.classList.remove('busy');
     $('dzProgress').hidden = true;
@@ -331,9 +359,8 @@ async function loadSceneline(text, label) {
     $('dzTitle').textContent = `Loaded: ${label} — ${r.parsed.scenes.length} scenes (imported ${prof} .sceneline)`;
     rerender();
   } catch (e) {
-    $('errBar').textContent =
-      e instanceof IngestError ? e.message : `Could not read this .sceneline. ${e.message || e}`;
-    $('errBar').hidden = false;
+    if (e instanceof IngestError) showError(e.message);
+    else showError(`Could not read this .sceneline. ${e.message || e}`, e);
   }
 }
 
