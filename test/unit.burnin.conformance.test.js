@@ -215,3 +215,63 @@ test('all-caps repeats never strip', async () => {
   assert.deepEqual(p.burn_ins, []);
   assert.deepEqual(p.characters.map((c) => c.name).sort(), ['MYRON', 'WANDA']);
 });
+
+// Corpus: test_watermark_eaten_cue_is_silent_without_strip (hub #37,
+// executed in scriptparse PR #38 — the Sceneline field validation's
+// silent-loss class). A repeated-position glyph sits at one fixed spot;
+// on ONE page a guest cue lands on that baseline, the way a real
+// watermark crosses different lines on different pages. Pre-strip the
+// glyph joins the cue's line cluster and drags minX out of the cue
+// band, so the line never becomes a cue candidate and no reject is
+// filed: the guest is absent from BOTH characters and rejects. The
+// pre-strip parser is expressed through the policy's own short-document
+// floor (3 pages < repeat_min_pages leaves signal 2 inert) — same
+// fixture, same glyph, shipped defaults. With the strip armed (5 pages)
+// the guest seats and the glyph surfaces on the burn_ins rail.
+const GLYPH = 'draft';
+const GLYPH_AT = { x: 120, y: 600 }; // cue baseline of the collision page
+
+function collisionBuild(pages, collideAt) {
+  const sp = new Screenplay();
+  for (let n = 1; n <= pages; n++) {
+    const v = (n - 1) % 5;
+    sp.page();
+    sp.slugNumbered(String(n), 'INT. LAB - NIGHT').blank();
+    sp.burnin(GLYPH, GLYPH_AT);
+    sp.action(ACTIONS[v]).blank();
+    sp.cue('WANDA').dialogue(W_LINES[v]).blank();
+    sp.cue('GLINDA').dialogue(M_LINES[v]);
+    if (n === collideAt) {
+      sp.blank().cue('MYRON').dialogue('One line, one page, one chance.');
+    }
+  }
+  return sp.build();
+}
+
+test('watermark-eaten cue is silent without the strip; seated with it', async () => {
+  // Without: the glyph survives, and the mechanism is proven, not
+  // assumed — the glued cluster carries both texts and its minX falls
+  // outside the cue band.
+  const raw3 = await extractRuns(collisionBuild(3, 2));
+  const glued = groupLines(raw3[1]).find((l) => l.text.includes('MYRON'));
+  assert.ok(glued.text.includes(GLYPH), glued.text);
+  assert.ok(glued.minX === GLYPH_AT.x && glued.minX < X.cue);
+  const without = parseShow(raw3);
+  assert.equal(without.scenes.length, 3);
+  assert.ok(!without.characters.some((c) => c.name === 'MYRON'));
+  assert.ok(!without.rejects.some((r) => r.name.includes('MYRON')));
+  assert.deepEqual(without.characters.map((c) => c.name).sort(), ['GLINDA', 'WANDA']);
+  assert.deepEqual(without.burn_ins, []);
+
+  // With: same glyph, same collision, enough pages to arm signal 2.
+  const withStrip = parseShow(await extractRuns(collisionBuild(5, 3)));
+  assert.equal(withStrip.scenes.length, 5);
+  assert.deepEqual(withStrip.characters.map((c) => c.name).sort(), ['GLINDA', 'MYRON', 'WANDA']);
+  const seated = withStrip.scenes.find((sc) => sc.characters_speaking.includes('MYRON'));
+  assert.equal(seated.id, '3');
+  assert.equal(textHits(withStrip, GLYPH), 0);
+  const recs = withStrip.burn_ins.filter((b) => b.signal === 'repeated-position');
+  assert.equal(recs.length, 1);
+  assert.equal(recs[0].text, GLYPH);
+  assert.equal(recs[0].pages, 5);
+});
