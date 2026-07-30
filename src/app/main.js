@@ -317,6 +317,8 @@ async function loadPdf(bytes, label) {
     $('search').value = '';
     $('dzTitle').textContent = `Loaded: ${label} — ${pages.length} page${pages.length === 1 ? '' : 's'}, ${parsed.scenes.length} scenes`;
     rerender();
+    // On a phone the matrix otherwise lands below the fold; bring it up.
+    if (matchMedia('(max-width:700px)').matches) $('tools').scrollIntoView();
   } catch (e) {
     if (doc && doc !== state.pdfDoc) await doc.destroy().catch(() => {});
     if (e instanceof ParseError) showError(e.message);

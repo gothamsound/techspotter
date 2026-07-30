@@ -24,7 +24,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--txt);font-family:var(--body);-webkit-font-smoothing:antialiased;font-size:var(--fs-body);line-height:1.45}
-.app{display:flex;flex-direction:column;min-height:100vh}
+.app{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 button{font-family:inherit}
 
 /* ---- top bar ---- */
@@ -259,4 +259,23 @@ tr.mrow td{background:var(--raised);padding:10px 14px}
   table.mx thead th,th.scnh,td.scn{position:static}
   table.mx tr{break-inside:avoid;page-break-inside:avoid}
   tr:hover td,tr:hover td.scn{background:var(--panel)}
+}
+
+/* ---- mobile (Peter, 2026-07-30): the matrix owns the screen ---- */
+@media (max-width:700px){
+  .screen{padding:10px 10px 14px}
+  .ingest{padding:9px 12px;gap:10px}
+  .ingest .ic,.ingest #dzSub{display:none}
+  .mx-tools{gap:6px;margin:10px 0 8px}
+  .search{width:110px;flex:1;min-width:90px}
+  .rolekey{display:none}
+  .castwarn,.addbar{flex-wrap:nowrap;overflow-x:auto}
+  .castwarn .cw-t{display:none}
+  .castwarn .cw-chip,.castwarn .mrg-chip,.castwarn .cw-x,.castwarn .rj-pair{flex:none}
+  .castwarn .cw-chip,.castwarn .mrg-chip{white-space:nowrap}
+  td.scn,th.scnh{min-width:0;max-width:44vw}
+  td.scn{padding:6px 8px}
+  td.scn .sl{max-width:44vw}
+  .mx-wrap{max-height:calc(100dvh - 110px)}
+  .mx-foot{gap:10px;padding:9px 2px}
 }
