@@ -1,0 +1,54 @@
+{
+ "cases": [
+  {
+   "aliases": null,
+   "cue": "MYRON (ON THE PHONE)",
+   "expect": "MYRON"
+  },
+  {
+   "aliases": null,
+   "cue": "MYRON (ON TV)",
+   "expect": "MYRON"
+  },
+  {
+   "aliases": null,
+   "cue": "MYRON'S TEXT",
+   "expect": "MYRON"
+  },
+  {
+   "aliases": null,
+   "cue": "MYRON'S DM",
+   "expect": "MYRON"
+  },
+  {
+   "aliases": null,
+   "cue": "YOUNG VALERIE",
+   "expect": "YOUNG VALERIE"
+  },
+  {
+   "aliases": null,
+   "cue": "MAN IN BLACK",
+   "expect": "MAN IN BLACK"
+  },
+  {
+   "aliases": {
+    "MYRON'S TEXT": "NARRATOR"
+   },
+   "cue": "MYRON'S TEXT",
+   "expect": "NARRATOR"
+  },
+  {
+   "aliases": {
+    "YOUNG VALERIE": ""
+   },
+   "cue": "YOUNG VALERIE",
+   "expect": "YOUNG VALERIE"
+  },
+  {
+   "aliases": null,
+   "cue": "myron (on tv)",
+   "expect": "MYRON"
+  }
+ ],
+ "contract": "part_of(cue, aliases) -> part_id (aliases: raw->canonical; blank canonical = keep separate)"
+}

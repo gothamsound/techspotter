@@ -1,0 +1,77 @@
+{
+ "cases": [
+  {
+   "cue": "MAN IN BLACK",
+   "expect": true
+  },
+  {
+   "cue": "GIRL ON TRAIN",
+   "expect": true
+  },
+  {
+   "cue": "VOICE OF GOD",
+   "expect": true
+  },
+  {
+   "cue": "DAY PLAYER",
+   "expect": true
+  },
+  {
+   "cue": "MYRON",
+   "expect": true
+  },
+  {
+   "cue": "WANDA",
+   "expect": true
+  },
+  {
+   "cue": "ELEANOR FROM HR",
+   "expect": false
+  },
+  {
+   "cue": "LOLA AND DENNY",
+   "expect": false
+  },
+  {
+   "cue": "MYRON OR WANDA",
+   "expect": false
+  },
+  {
+   "cue": "EPISODE 102",
+   "expect": false
+  },
+  {
+   "cue": "ACT TWO",
+   "expect": false
+  },
+  {
+   "cue": "CHAPTER THREE",
+   "expect": false
+  },
+  {
+   "cue": "DAY 3",
+   "expect": false
+  },
+  {
+   "cue": "CUT TO",
+   "expect": false
+  },
+  {
+   "cue": "THE END",
+   "expect": false
+  },
+  {
+   "cue": "TAG",
+   "expect": false
+  },
+  {
+   "cue": "S",
+   "expect": false
+  },
+  {
+   "cue": "MYRON-",
+   "expect": false
+  }
+ ],
+ "contract": "cue_semantic_ok(cue) -> bool (the MAN IN BLACK ruling: stop words are conjunctions + FROM only)"
+}

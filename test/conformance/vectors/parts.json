@@ -1,0 +1,166 @@
+{
+ "cases": [
+  {
+   "aliases": null,
+   "expect": {
+    "MYRON": [
+     {
+      "anchor": {
+       "bbox": [
+        72.0,
+        700.0,
+        130.0,
+        712.0
+       ],
+       "page": 1,
+       "source_doc": "t.pdf"
+      },
+      "cue_string": "MYRON",
+      "page": 1,
+      "scene": "1",
+      "source_doc": "t.pdf"
+     },
+     {
+      "anchor": {
+       "bbox": [
+        72.0,
+        650.0,
+        210.0,
+        662.0
+       ],
+       "page": 1,
+       "source_doc": "t.pdf"
+      },
+      "cue_string": "MYRON (ON THE PHONE)",
+      "page": 1,
+      "scene": "1",
+      "source_doc": "t.pdf"
+     },
+     {
+      "anchor": {
+       "bbox": [
+        72.0,
+        700.0,
+        170.0,
+        712.0
+       ],
+       "page": 2,
+       "source_doc": "t.pdf"
+      },
+      "cue_string": "MYRON'S TEXT",
+      "page": 2,
+      "scene": "2",
+      "source_doc": "t.pdf"
+     }
+    ]
+   },
+   "name": "channel-and-silent-variants-fold-to-one-part",
+   "parse": {
+    "characters": [
+     "MYRON",
+     "MYRON (ON THE PHONE)",
+     "MYRON'S TEXT"
+    ],
+    "scenes": [
+     {
+      "cues": [
+       {
+        "anchor": {
+         "bbox": [
+          72.0,
+          700.0,
+          130.0,
+          712.0
+         ],
+         "page": 1,
+         "source_doc": "t.pdf"
+        },
+        "character": "MYRON",
+        "raw": "MYRON"
+       },
+       {
+        "anchor": {
+         "bbox": [
+          72.0,
+          650.0,
+          210.0,
+          662.0
+         ],
+         "page": 1,
+         "source_doc": "t.pdf"
+        },
+        "character": "MYRON",
+        "raw": "MYRON (ON THE PHONE)"
+       }
+      ],
+      "scene": "1"
+     },
+     {
+      "cues": [
+       {
+        "anchor": {
+         "bbox": [
+          72.0,
+          700.0,
+          170.0,
+          712.0
+         ],
+         "page": 2,
+         "source_doc": "t.pdf"
+        },
+        "character": "MYRON'S TEXT",
+        "raw": "MYRON'S TEXT"
+       }
+      ],
+      "scene": "2"
+     }
+    ]
+   }
+  },
+  {
+   "aliases": {
+    "MYRON'S TEXT": "NARRATOR",
+    "YOUNG VALERIE": ""
+   },
+   "expect": {
+    "NARRATOR": [
+     {
+      "anchor": null,
+      "cue_string": "MYRON'S TEXT",
+      "page": null,
+      "scene": "1",
+      "source_doc": null
+     }
+    ],
+    "YOUNG VALERIE": [
+     {
+      "anchor": null,
+      "cue_string": "YOUNG VALERIE",
+      "page": null,
+      "scene": "1",
+      "source_doc": null
+     }
+    ]
+   },
+   "name": "alias-wins-and-blank-canonical-keeps-separate",
+   "parse": {
+    "scenes": [
+     {
+      "cues": [
+       {
+        "character": "MYRON'S TEXT",
+        "raw": "MYRON'S TEXT"
+       },
+       {
+        "character": "YOUNG VALERIE",
+        "raw": "YOUNG VALERIE"
+       }
+      ],
+      "scene": "1"
+     }
+    ]
+   }
+  }
+ ],
+ "contract": "parts(parse, aliases) -> {part_id: [occurrence]}; show.characters is never mutated (spec 2.2)"
+}

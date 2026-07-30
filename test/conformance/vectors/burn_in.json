@@ -1,0 +1,1013 @@
+{
+ "contract": "signal-2 arithmetic per policy burn_in: cell = [floor(x0/grid), floor((page_height - bottom)/grid)]; threshold = max(repeat_min_pages, ceil(pages * repeat_page_fraction)); candidates group per page by y-cell, strip only if the joined text has a lowercase letter; a group whose line's rightmost word is a printed-page token never strips",
+ "detect": [
+  {
+   "expect_strip_indices": [
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   "name": "stamp-strips-on-5-of-5",
+   "note": "repeated mixed-case group strips; the no-lowercase fragment 'A.' strips with its lowercase siblings",
+   "page_heights": [
+    792.0,
+    792.0,
+    792.0,
+    792.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 403.0,
+      "text": "unique3",
+      "top": 393.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 404.0,
+      "text": "unique4",
+      "top": 394.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  },
+  {
+   "expect_strip_indices": [
+    [],
+    [],
+    []
+   ],
+   "name": "threshold-floor-spares-3-pages",
+   "note": "max(4, ceil(3*0.5)) = 4 > 3 pages: nothing strips on a short document",
+   "page_heights": [
+    792.0,
+    792.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "Prepared",
+      "top": 120.0,
+      "x0": 36.0,
+      "x1": 100.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "for",
+      "top": 120.0,
+      "x0": 110.0,
+      "x1": 134.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "A.",
+      "top": 120.0,
+      "x0": 140.0,
+      "x1": 156.0
+     },
+     {
+      "bottom": 130.0,
+      "text": "Kessler",
+      "top": 120.0,
+      "x0": 160.0,
+      "x1": 216.0
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  },
+  {
+   "expect_strip_indices": [
+    [],
+    [],
+    [],
+    [],
+    []
+   ],
+   "name": "all-caps-repeat-never-strips",
+   "note": "the mixed-case fence: repeating caps furniture is not burn-in",
+   "page_heights": [
+    792.0,
+    792.0,
+    792.0,
+    792.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 40.0,
+      "text": "SHOW",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 104.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "CODE",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 152.0
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "SHOW",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 104.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "CODE",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 152.0
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "SHOW",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 104.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "CODE",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 152.0
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "SHOW",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 104.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "CODE",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 152.0
+     },
+     {
+      "bottom": 403.0,
+      "text": "unique3",
+      "top": 393.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "SHOW",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 104.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "CODE",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 152.0
+     },
+     {
+      "bottom": 404.0,
+      "text": "unique4",
+      "top": 394.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  },
+  {
+   "expect_strip_indices": [
+    [],
+    [],
+    [],
+    [],
+    []
+   ],
+   "name": "trailing-page-token-exempts-the-header",
+   "note": "repeated mixed-case prefix + varying trailing page token: running header, never strips",
+   "page_heights": [
+    792.0,
+    792.0,
+    792.0,
+    792.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 40.0,
+      "text": "Draft",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 112.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "Rev",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 144.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "3.",
+      "top": 30.0,
+      "x0": 540.0,
+      "x1": 556.0
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "Draft",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 112.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "Rev",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 144.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "4.",
+      "top": 30.0,
+      "x0": 540.0,
+      "x1": 556.0
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "Draft",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 112.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "Rev",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 144.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "5.",
+      "top": 30.0,
+      "x0": 540.0,
+      "x1": 556.0
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "Draft",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 112.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "Rev",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 144.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "6.",
+      "top": 30.0,
+      "x0": 540.0,
+      "x1": 556.0
+     },
+     {
+      "bottom": 403.0,
+      "text": "unique3",
+      "top": 393.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 40.0,
+      "text": "Draft",
+      "top": 30.0,
+      "x0": 72.0,
+      "x1": 112.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "Rev",
+      "top": 30.0,
+      "x0": 120.0,
+      "x1": 144.0
+     },
+     {
+      "bottom": 40.0,
+      "text": "7.",
+      "top": 30.0,
+      "x0": 540.0,
+      "x1": 556.0
+     },
+     {
+      "bottom": 404.0,
+      "text": "unique4",
+      "top": 394.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  },
+  {
+   "expect_strip_indices": [
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ]
+   ],
+   "name": "floor-cliff-half-grid",
+   "note": "x0 alternates 11.9/12.1 around half-grid: floor puts both in cell 0 (repeats, strips); a round-half-up engine splits them and must fail this vector",
+   "page_heights": [
+    792.0,
+    792.0,
+    792.0,
+    792.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 130.0,
+      "text": "watermark",
+      "top": 120.0,
+      "x0": 11.9,
+      "x1": 83.9
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "watermark",
+      "top": 120.0,
+      "x0": 12.1,
+      "x1": 84.1
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "watermark",
+      "top": 120.0,
+      "x0": 11.9,
+      "x1": 83.9
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "watermark",
+      "top": 120.0,
+      "x0": 12.1,
+      "x1": 84.1
+     },
+     {
+      "bottom": 403.0,
+      "text": "unique3",
+      "top": 393.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 130.0,
+      "text": "watermark",
+      "top": 120.0,
+      "x0": 11.9,
+      "x1": 83.9
+     },
+     {
+      "bottom": 404.0,
+      "text": "unique4",
+      "top": 394.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  },
+  {
+   "expect_strip_indices": [
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ],
+    [
+     0
+    ]
+   ],
+   "name": "anchor-space-survives-mixed-page-heights",
+   "note": "same bottom-left offset on letter and legal pages: anchor space keeps one cell (strips); a top-left engine splits them and must fail this vector",
+   "page_heights": [
+    792.0,
+    1008.0,
+    792.0,
+    1008.0,
+    792.0
+   ],
+   "pages": [
+    [
+     {
+      "bottom": 742.0,
+      "text": "watermark",
+      "top": 732.0,
+      "x0": 36.0,
+      "x1": 108.0
+     },
+     {
+      "bottom": 400.0,
+      "text": "unique0",
+      "top": 390.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 958.0,
+      "text": "watermark",
+      "top": 948.0,
+      "x0": 36.0,
+      "x1": 108.0
+     },
+     {
+      "bottom": 401.0,
+      "text": "unique1",
+      "top": 391.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 742.0,
+      "text": "watermark",
+      "top": 732.0,
+      "x0": 36.0,
+      "x1": 108.0
+     },
+     {
+      "bottom": 402.0,
+      "text": "unique2",
+      "top": 392.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 958.0,
+      "text": "watermark",
+      "top": 948.0,
+      "x0": 36.0,
+      "x1": 108.0
+     },
+     {
+      "bottom": 403.0,
+      "text": "unique3",
+      "top": 393.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ],
+    [
+     {
+      "bottom": 742.0,
+      "text": "watermark",
+      "top": 732.0,
+      "x0": 36.0,
+      "x1": 108.0
+     },
+     {
+      "bottom": 404.0,
+      "text": "unique4",
+      "top": 394.0,
+      "x0": 72.0,
+      "x1": 128.0
+     }
+    ]
+   ]
+  }
+ ],
+ "quantizer": [
+  {
+   "expect_cell": [
+    0,
+    0
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 792.0,
+    "text": "q",
+    "top": 782.0,
+    "x0": 0.0,
+    "x1": 8.0
+   }
+  },
+  {
+   "expect_cell": [
+    0,
+    0
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 780.0,
+    "text": "q",
+    "top": 770.0,
+    "x0": 12.0,
+    "x1": 20.0
+   }
+  },
+  {
+   "expect_cell": [
+    0,
+    1
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 768.0,
+    "text": "q",
+    "top": 758.0,
+    "x0": 23.9,
+    "x1": 31.9
+   }
+  },
+  {
+   "expect_cell": [
+    1,
+    2
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 744.0,
+    "text": "q",
+    "top": 734.0,
+    "x0": 24.0,
+    "x1": 32.0
+   }
+  },
+  {
+   "expect_cell": [
+    1,
+    2
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 742.0,
+    "text": "q",
+    "top": 732.0,
+    "x0": 36.0,
+    "x1": 44.0
+   }
+  },
+  {
+   "expect_cell": [
+    8,
+    23
+   ],
+   "grid": 24,
+   "page_height": 792.0,
+   "word": {
+    "bottom": 220.25,
+    "text": "q",
+    "top": 210.25,
+    "x0": 200.5,
+    "x1": 208.5
+   }
+  }
+ ],
+ "thresholds": [
+  {
+   "expect_threshold": 4,
+   "pages": 1
+  },
+  {
+   "expect_threshold": 4,
+   "pages": 3
+  },
+  {
+   "expect_threshold": 4,
+   "pages": 4
+  },
+  {
+   "expect_threshold": 4,
+   "pages": 5
+  },
+  {
+   "expect_threshold": 4,
+   "pages": 7
+  },
+  {
+   "expect_threshold": 4,
+   "pages": 8
+  },
+  {
+   "expect_threshold": 5,
+   "pages": 9
+  },
+  {
+   "expect_threshold": 54,
+   "pages": 108
+  }
+ ]
+}

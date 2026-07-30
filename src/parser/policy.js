@@ -253,3 +253,56 @@ export function isTransition(text) {
 function escapeRe(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+/* ---- derivations (interchange spec §2.2; hub issue #40 Phase 0) ----
+ * parts()/part_of() fold FREELY: they derive per-performer views and
+ * never mutate show.characters (the MB TONY STARBUCK ruling separates
+ * offer-only identity mutation from free derivation). cast_aliases win
+ * over the fold; a blank canonical pins keep-separate (spec §2 rule 5).
+ * Conformance-pinned by the hub corpus (vectors/part_of.json,
+ * vectors/parts.json, vectors/offers.json). */
+
+export function partOf(cue, aliases = null) {
+  if (aliases && Object.prototype.hasOwnProperty.call(aliases, cue)) {
+    return aliases[cue] || cue;
+  }
+  return foldName(cue).base;
+}
+
+export function parts(parse, aliases = null) {
+  const out = {};
+  for (const sc of parse.scenes ?? []) {
+    for (const cue of sc.cues ?? []) {
+      const pid = partOf(cue.raw, aliases);
+      const a = cue.anchor ?? null;
+      (out[pid] ??= []).push({
+        cue_string: cue.raw,
+        scene: sc.scene,
+        page: a?.page ?? null,
+        source_doc: a?.source_doc ?? null,
+        anchor: a,
+      });
+    }
+  }
+  return out;
+}
+
+// Policy-level fold candidates: every channel-tier name yields an offer,
+// input order, whether or not the base is present (the hub contract).
+// Bench PRESENTATION stays in characters.js findMergeOffers (base must
+// exist; text kind routes to the conversion rail per the Layer 2 ruling).
+export function foldCandidates(names) {
+  const offers = [];
+  for (const name of names) {
+    const f = foldName(name);
+    if (f.tier !== 'channel') continue;
+    offers.push({
+      from: name,
+      into: f.base,
+      channel: f.channel,
+      tier: f.tier,
+      kind: f.kind,
+    });
+  }
+  return offers;
+}

@@ -1,0 +1,428 @@
+{
+ "cases": [
+  {
+   "cue": "MYRON (V.O.)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (VO)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (O.S.)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (O.C.)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (CONT'D)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (V.O.) (CONT'D)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (ON THE PHONE)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (ON PHONE)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (INTERCUT)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (PRE-LAP)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (PRELAP)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (INTO PHONE)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (OVER THE PHONE)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (ON SPEAKER)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (OVER SPEAKER)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (SPEAKERPHONE)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (ON THE PHONE) (CONT'D)",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": "standard"
+   }
+  },
+  {
+   "cue": "MYRON (ON TV)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON TV",
+    "kind": "tv",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON SCREEN)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON SCREEN",
+    "kind": "screen",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON MONITOR)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON MONITOR",
+    "kind": "screen",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON VIDEO)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON VIDEO",
+    "kind": "screen",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON RADIO)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON RADIO",
+    "kind": "radio",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (OVER RADIO)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "OVER RADIO",
+    "kind": "radio",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (FILTERED)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "FILTERED",
+    "kind": "filtered",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON COMMS)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON COMMS",
+    "kind": "comms",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (OVER COMMS)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "OVER COMMS",
+    "kind": "comms",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (ON TV) (CONT'D)",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON TV",
+    "kind": "tv",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S TEXT",
+   "expect": {
+    "base": "MYRON",
+    "channel": "TEXT",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S TEXTS",
+   "expect": {
+    "base": "MYRON",
+    "channel": "TEXTS",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S VOICE",
+   "expect": {
+    "base": "MYRON",
+    "channel": "VOICE",
+    "kind": "voice",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S VOICEMAIL",
+   "expect": {
+    "base": "MYRON",
+    "channel": "VOICEMAIL",
+    "kind": "voice",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S VM",
+   "expect": {
+    "base": "MYRON",
+    "channel": "VM",
+    "kind": "voice",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S POST",
+   "expect": {
+    "base": "MYRON",
+    "channel": "POST",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S POSTS",
+   "expect": {
+    "base": "MYRON",
+    "channel": "POSTS",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S DM",
+   "expect": {
+    "base": "MYRON",
+    "channel": "DM",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S DMS",
+   "expect": {
+    "base": "MYRON",
+    "channel": "DMS",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON’S TEXT",
+   "expect": {
+    "base": "MYRON",
+    "channel": "TEXT",
+    "kind": "text",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON'S MOM",
+   "expect": {
+    "base": "MYRON'S MOM",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "YOUNG VALERIE",
+   "expect": {
+    "base": "YOUNG VALERIE",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "MERC #1",
+   "expect": {
+    "base": "MERC #1",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "MERC #1 (V.O.)",
+   "expect": {
+    "base": "MERC #1 (V.O.)",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "MYRON (WHISPERING)",
+   "expect": {
+    "base": "MYRON (WHISPERING)",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "MYRON",
+   "expect": {
+    "base": "MYRON",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "",
+   "expect": {
+    "base": "",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "  MYRON   (ON TV) ",
+   "expect": {
+    "base": "MYRON",
+    "channel": "ON TV",
+    "kind": "tv",
+    "tier": "channel"
+   }
+  },
+  {
+   "cue": "MYRON (OVER PHONE)",
+   "expect": {
+    "base": "MYRON (OVER PHONE)",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  },
+  {
+   "cue": "MYRON (ON THE TV)",
+   "expect": {
+    "base": "MYRON (ON THE TV)",
+    "channel": null,
+    "kind": null,
+    "tier": null
+   }
+  }
+ ],
+ "contract": "fold(cue) -> {base, channel, tier, kind}"
+}

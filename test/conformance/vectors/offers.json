@@ -1,0 +1,55 @@
+{
+ "cases": [
+  {
+   "expect": [
+    {
+     "channel": "TEXT",
+     "from": "MYRON'S TEXT",
+     "into": "MYRON",
+     "kind": "text",
+     "tier": "channel"
+    },
+    {
+     "channel": "ON TV",
+     "from": "MYRON (ON TV)",
+     "into": "MYRON",
+     "kind": "tv",
+     "tier": "channel"
+    }
+   ],
+   "names": [
+    "MYRON",
+    "MYRON'S TEXT",
+    "MYRON (ON TV)",
+    "MYRON (V.O.)",
+    "MYRON (ON THE PHONE)",
+    "YOUNG VALERIE",
+    "MERC #1"
+   ]
+  },
+  {
+   "expect": [
+    {
+     "channel": "FILTERED",
+     "from": "WANDA (FILTERED)",
+     "into": "WANDA",
+     "kind": "filtered",
+     "tier": "channel"
+    },
+    {
+     "channel": "VOICE",
+     "from": "PARKER'S VOICE",
+     "into": "PARKER",
+     "kind": "voice",
+     "tier": "channel"
+    }
+   ],
+   "names": [
+    "WANDA (FILTERED)",
+    "PARKER'S VOICE",
+    "WANDA (INTO PHONE)"
+   ]
+  }
+ ],
+ "contract": "fold_candidates(names) -> offers [{from, into, channel, tier, kind}]; silent tier and never-fold contribute nothing"
+}

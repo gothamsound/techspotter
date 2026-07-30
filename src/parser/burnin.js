@@ -19,7 +19,12 @@
 import { BURN_IN as B } from './policy.js';
 
 const PAGE_TOKEN_RE = /^[A-Za-z]?\d+[A-Za-z]?\.$/;
-const cell = (v) => Math.floor(v / B.repeat_grid_pt);
+// cell and repeatThreshold are exported for the hub conformance corpus
+// (issue #40): the vectors pin this exact arithmetic as the cross-engine
+// cliff, so the corpus must run against the engine's own functions.
+export const cell = (v, grid = B.repeat_grid_pt) => Math.floor(v / grid);
+export const repeatThreshold = (pageCount) =>
+  Math.max(B.repeat_min_pages, Math.ceil(pageCount * B.repeat_page_fraction));
 const runKey = (run) => `${run.str.trim()}|${cell(run.x)}|${cell(run.y)}`;
 const runEnd = (run) => run.x + (run.width || 0);
 
@@ -33,10 +38,7 @@ export function stripBurnIns(pages) {
       seen.get(key).add(p);
     }
   });
-  const threshold = Math.max(
-    B.repeat_min_pages,
-    Math.ceil(pages.length * B.repeat_page_fraction),
-  );
+  const threshold = repeatThreshold(pages.length);
 
   const records = new Map(); // signal|text -> record
   const note = (signal, text, page, bbox) => {
