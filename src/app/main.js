@@ -40,7 +40,7 @@ function showError(msg, e) {
   if (frames) {
     const det = document.createElement('span');
     det.className = 'err-det';
-    det.textContent = `[b0730b: ${frames}]`;
+    det.textContent = `[b0730c: ${frames}]`;
     bar.append(det);
   }
   bar.hidden = false;
@@ -241,6 +241,24 @@ function saveBar() {
         throw new Error(`${name} is already a column.`);
       }
       addCharacter(state.parsed, name, [...bar.ids]);
+    } else if (
+      name !== bar.target &&
+      state.parsed.characters.some((c) => c.name === name)
+    ) {
+      // Renaming onto an existing column IS the manual merge (any pair,
+      // not just offered ones). Merge is an expensive mistake, so it
+      // two-steps like every other merge; commit records cast_aliases.
+      const target = bar.target;
+      twoTap('barmerge', `${target}→${name}`, () => {
+        mergeCharacters(state.parsed, target, name);
+        closeBar();
+      });
+      if (state.armed?.kind === 'barmerge') {
+        $('abErr').textContent = '';
+        $('abHint').textContent = `${target} → ${name}: same performer? Save again to merge (moves scenes and dialogue; two-step).`;
+        $('abSave').textContent = 'Merge (confirm)';
+      }
+      return;
     } else {
       renameCharacter(state.parsed, bar.target, name);
     }
