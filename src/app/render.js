@@ -256,15 +256,15 @@ function renderMatrix(state, act, table) {
     }
     for (const c of chars) {
       const td = el('td', 'cell');
-      let stateWord = 'not in scene';
+      let stateWord = 'not in scene · click: speaks';
       let anchor = null;
       if (scene.characters_speaking.includes(c.name)) {
         td.classList.add('on');
-        stateWord = 'speaks';
+        stateWord = 'speaks · click: present, no lines';
         anchor = cueAnchorFor(scene, c.name);
       } else if (scene.present_confirmed?.includes(c.name)) {
         td.classList.add('pres');
-        stateWord = 'present, no lines (confirmed)';
+        stateWord = 'present, no lines · click: clear';
         anchor = mentionAnchorFor(scene, c.name);
       } else if (scene.present_suggest?.includes(c.name)) {
         td.classList.add('sug');

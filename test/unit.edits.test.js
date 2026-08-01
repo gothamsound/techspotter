@@ -89,3 +89,20 @@ test('dismissed offer stays dismissed across later edits', async () => {
   toggleSpeaker(p, '1', 'VICTOR');
   assert.deepEqual(p.merge_offers, []);
 });
+
+test('column order: operator moves survive recompute; new names append', async () => {
+  const { moveCharacter, toggleSpeaker: toggle } = await import('../src/parser/edits.js');
+  const p = await parsedFixture();
+  const names = () => p.characters.map((c) => c.name);
+  const start = names();
+  assert.ok(start.length >= 2);
+  moveCharacter(p, start[0], 1);
+  const moved = names();
+  assert.equal(moved[1], start[0]);
+  // Any edit triggers recompute; the operator's order must hold.
+  toggle(p, p.scenes[0].id, moved[0]);
+  assert.deepEqual(names(), moved);
+  // Edges are no-ops, not errors.
+  moveCharacter(p, names()[0], -1);
+  assert.deepEqual(names(), moved);
+});

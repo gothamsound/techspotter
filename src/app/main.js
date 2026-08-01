@@ -8,6 +8,7 @@ import {
   promoteReject,
   dismissReject,
   cycleCell,
+  moveCharacter,
   renameCharacter,
   deleteCharacter,
   mergeCharacters,
@@ -40,7 +41,7 @@ function showError(msg, e) {
   if (frames) {
     const det = document.createElement('span');
     det.className = 'err-det';
-    det.textContent = `[b0730c: ${frames}]`;
+    det.textContent = `[b0730d: ${frames}]`;
     bar.append(det);
   }
   bar.hidden = false;
@@ -226,9 +227,10 @@ function syncBar() {
   $('abHint').textContent =
     bar.mode === 'add'
       ? 'scenes auto-mark by text search — tap cells in the amber column to adjust, then Save'
-      : `renaming ${bar.target} — Enter saves, Esc cancels`;
+      : `renaming ${bar.target} — Enter saves, Esc cancels; ◀ ▶ move the column`;
   $('abSave').textContent = bar.mode === 'add' ? 'Save character' : 'Rename';
   $('abSave').disabled = !bar.name.trim();
+  $('abLeft').hidden = $('abRight').hidden = bar.mode !== 'rename';
 }
 
 function saveBar() {
@@ -271,6 +273,14 @@ function saveBar() {
 $('addCharBtn').onclick = () => (state.bar?.mode === 'add' ? closeBar() : openAddBar());
 $('abSave').onclick = saveBar;
 $('abCancel').onclick = closeBar;
+for (const [id, dir] of [['abLeft', -1], ['abRight', 1]]) {
+  $(id).onclick = () => {
+    const bar = state.bar;
+    if (!bar || bar.mode !== 'rename') return;
+    moveCharacter(state.parsed, bar.target, dir);
+    rerender();
+  };
+}
 $('abName').addEventListener('input', () => {
   const bar = state.bar;
   if (!bar) return;

@@ -58,9 +58,12 @@ export function toggleSpeaker(parsed, sceneId, name) {
   return parsed;
 }
 
-// Cell state machine (operator authority, one click advances):
-// suggested (dashed) -> confirmed present (solid) -> speaking (green) ->
-// empty (suggestion dismissed so it stays empty) -> speaking -> ...
+// Cell state machine (operator authority, one click advances the loop):
+// empty -> speaking -> present (confirmed) -> empty -> ... with a
+// suggestion entering the loop at confirmed. Every state is reachable
+// from every state (Patrick's field report, 2026-07-31: presence must
+// be settable in scenes where the parser suggested nothing, and
+// reachable AGAIN after cycling past it).
 export function cycleCell(parsed, sceneId, name) {
   const scene = parsed.scenes.find((s) => s.id === sceneId);
   if (!scene) return parsed;
@@ -71,10 +74,11 @@ export function cycleCell(parsed, sceneId, name) {
   const suggested = scene.present_suggest?.includes(name);
   if (speaking) {
     scene.characters_speaking.splice(scene.characters_speaking.indexOf(name), 1);
-    if (!scene.present_dismissed.includes(name)) scene.present_dismissed.push(name);
+    scene.present_dismissed = scene.present_dismissed.filter((n) => n !== name);
+    scene.present_confirmed.push(name);
   } else if (confirmed) {
     scene.present_confirmed.splice(scene.present_confirmed.indexOf(name), 1);
-    scene.characters_speaking.push(name);
+    if (!scene.present_dismissed.includes(name)) scene.present_dismissed.push(name);
   } else if (suggested) {
     scene.present_confirmed.push(name);
   } else {
@@ -82,6 +86,18 @@ export function cycleCell(parsed, sceneId, name) {
     scene.characters_speaking.push(name);
   }
   recompute(parsed);
+  return parsed;
+}
+
+// Column order is operator territory: recompute preserves it, this
+// nudges it. The characters array order IS the order; exports carry it
+// (show.characters), imports restore it.
+export function moveCharacter(parsed, name, dir) {
+  const i = parsed.characters.findIndex((c) => c.name === name);
+  const j = i + (dir < 0 ? -1 : 1);
+  if (i < 0 || j < 0 || j >= parsed.characters.length) return parsed;
+  const [c] = parsed.characters.splice(i, 1);
+  parsed.characters.splice(j, 0, c);
   return parsed;
 }
 
@@ -159,6 +175,10 @@ export function recompute(parsed) {
   const derived = new Map(deriveCharacters(parsed.scenes).map((c) => [c.name, c]));
   const roster = new Map(parsed.characters.map((c) => [c.name, c]));
   const names = new Set([...roster.keys(), ...derived.keys()]);
+  // Order-stable: existing columns keep their position (operator
+  // reordering and imported file order survive every edit); only
+  // genuinely new names sort in by scene count, at the end.
+  const order = new Map(parsed.characters.map((c, i) => [c.name, i]));
   parsed.characters = [...names]
     .map((name) => ({
       ...(roster.get(name) ?? {}),
@@ -166,7 +186,11 @@ export function recompute(parsed) {
       scenes: derived.get(name)?.scenes ?? [],
       scene_count: derived.get(name)?.scene_count ?? 0,
     }))
-    .sort((a, b) => b.scene_count - a.scene_count);
+    .sort((a, b) => {
+      const ia = order.get(a.name) ?? Infinity;
+      const ib = order.get(b.name) ?? Infinity;
+      return ia !== ib ? ia - ib : b.scene_count - a.scene_count;
+    });
   const dismissed = parsed.dismissed_offers ?? [];
   parsed.merge_offers = findMergeOffers(parsed.characters).filter(
     (o) =>

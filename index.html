@@ -97,6 +97,8 @@
       <input class="addname" id="abName" placeholder="CHARACTER NAME" maxlength="40" autocomplete="off" spellcheck="false">
       <span class="ab-hint" id="abHint">scenes auto-mark by text search — tap cells in the amber column to adjust, then Save</span>
       <span class="ab-err" id="abErr"></span>
+      <button class="btn" id="abLeft" title="Move this column left" hidden>◀</button>
+      <button class="btn" id="abRight" title="Move this column right" hidden>▶</button>
       <button class="btn primary" id="abSave" disabled>Save character</button>
       <button class="btn" id="abCancel">Cancel</button>
     </div>
@@ -113,7 +115,7 @@
 
   <div class="foot">TechSpotter &mdash; all processing happens in your browser. Your script never leaves your device.
     <a href="https://github.com/gothamsound/techspotter/blob/main/LICENSE">MIT license</a>.
-    <span class="bld" title="build stamp, cite this when reporting a problem">b0730c</span></div>
+    <span class="bld" title="build stamp, cite this when reporting a problem">b0730d</span></div>
 
   <div class="peek" id="peek" hidden>
     <img id="peekImg" alt="Source region from the loaded PDF">
